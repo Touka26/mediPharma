@@ -33,12 +33,12 @@ class Product extends Model
     }
 
     public function salesBillsProducts(){
-        return $this->hasMany(Sales_Bill_Product::class , 'product_id');
+        return $this->hasMany(Sales_Bill_Product::class );
 
     }
 
     public function pharmacistProducts(){
-        return $this->hasMany(Pharmacist_Product::class , 'product_id');
+        return $this->hasMany(Pharmacist_Product::class );
 
     }
 

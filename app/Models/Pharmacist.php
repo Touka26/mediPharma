@@ -35,11 +35,11 @@ class Pharmacist extends Model
     ];
 
     public function pharmacistsMedicines(){
-        return $this->hasMany(Pharmacist_Medicine::class , 'pharmacistid');
+        return $this->hasMany(Pharmacist_Medicine::class );
     }
 
     public function pharmacistsProducts(){
-        return $this->hasMany(Pharmacist_Product::class , 'pharmacist_id');
+        return $this->hasMany(Pharmacist_Product::class );
     }
 
     public function orderProcessing(){

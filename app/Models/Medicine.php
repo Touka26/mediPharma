@@ -29,14 +29,14 @@ class Medicine extends Model
     ];
 
     public function pharmacistsMedicines(){
-        return $this->hasMany(Pharmacist_Medicine::class , 'medicine_id');
+        return $this->hasMany(Pharmacist_Medicine::class );
     }
 
     public function purchasesBillMedicines(){
-        return $this->hasMany(Purchases_Bill_Medicine::class ,'medicine_id');
+        return $this->hasMany(Purchases_Bill_Medicine::class );
     }
 
     public function salesBillMedicines(){
-        return $this->hasMany(Sales_Bill_Medicine::class , 'medicine_id');
+        return $this->hasMany(Sales_Bill_Medicine::class );
     }
 }

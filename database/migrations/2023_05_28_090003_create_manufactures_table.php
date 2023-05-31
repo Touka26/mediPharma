@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('manufactures_companies', function (Blueprint $table) {
+        Schema::create('manufactures', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id')->unique();
             $table->string('company_name');
 
             $table->timestamps();
