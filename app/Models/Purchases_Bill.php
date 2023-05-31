@@ -23,12 +23,12 @@ class Purchases_Bill extends Model
     ];
 
     public function purchasesBillsMedicines(){
-        return $this->hasMany(Purchases_Bill_Medicine::class , 'purchases_bill_id');
+        return $this->hasMany(Purchases_Bill_Medicine::class );
 
     }
 
     public function purchasesBillsProducts(){
-        return $this->hasMany(Purchases_Bill_Product::class , 'purchases_bill_id');
+        return $this->hasMany(Purchases_Bill_Product::class );
 
     }
 }

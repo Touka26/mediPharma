@@ -19,10 +19,10 @@ class Admin extends Model
 
 
     public function ordersProcessing(){
-        return $this->hasMany(Orders_Processing::class,'admin_id');
+        return $this->hasMany(Orders_Processing::class);
     }
 
     public function notifications(){
-        return $this->hasMany(Notification::class,'admin_id');
+        return $this->hasMany(Notification::class);
     }
 }
