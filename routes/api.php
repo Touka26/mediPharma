@@ -24,6 +24,9 @@ Route::prefix('pharmacist')->group(function () {
         Route::post('/login', [PharmacistController::class, 'login']);
         Route::post('/logout', [PharmacistController::class, 'logout']);
     });
+    Route::delete('/delete/{id}', [PharmacistController::class, 'deleteAccount']);
+    Route::post('/update/{id}', [PharmacistController::class, 'update']);
+    Route::get('/showProfile/{id}', [PharmacistController::class, 'index']);
 
 
 });

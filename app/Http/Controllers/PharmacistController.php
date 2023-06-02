@@ -11,32 +11,16 @@ use Illuminate\Validation\ValidationException;
 
 class PharmacistController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    //show a specific profile
+
+    public function index($id)
     {
-        //
+        $pharmacist = Pharmacist::query()->find($id)->get();
+        return response()->json(['message' => 'this is my profile', $pharmacist], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+    //------------------------------------------------------------------------
 
     //Register for Pharmacist
 
@@ -53,7 +37,6 @@ class PharmacistController extends Controller
         }
 
         $request->validate([
-            //'pharmacist_id' => ['required', 'integer'],
             'first_name' => ['required', 'string', 'max:30'],
             'middle_name' => ['required', 'string', 'max:30'],
             'last_name' => ['required', 'string', 'max:30'],
@@ -69,28 +52,27 @@ class PharmacistController extends Controller
             'email' => 'required|email',
             'password' => ['required', 'string', 'min:8'],
             'password_confirmation' => ['required', 'string', 'min:8'],
-            'image_url' =>'required|file' ,//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'financial_fund' => ['required'],
         ]);
 
-         if ($request->hasFile('copy_of_the_syndicate_card_url')) {
-             $destination_path = 'public/files/syndicateCard';
-             $copy_of_the_syndicate_card_url= $request->file('copy_of_the_syndicate_card_url');
-             $file_name = $copy_of_the_syndicate_card_url->getClientOriginalName();
-             $path = $request->file('copy_of_the_syndicate_card_url')->storeAs($destination_path, $file_name);
-             $url1 = Storage::url($path);
-         }
+        if ($request->hasFile('copy_of_the_syndicate_card_url')) {
+            $destination_path = 'public/files/syndicateCard';
+            $copy_of_the_syndicate_card_url = $request->file('copy_of_the_syndicate_card_url');
+            $file_name = $copy_of_the_syndicate_card_url->getClientOriginalName();
+            $path = $request->file('copy_of_the_syndicate_card_url')->storeAs($destination_path, $file_name);
+            $url1 = Storage::url($path);
+        }
 
-         if ($request->hasFile('image_url')) {
-             $destination_path = 'public/files/images';
-             $image_url = $request->file('image_url');
-             $file_name = $image_url->getClientOriginalName();
-             $path = $request->file('image_url')->storeAs($destination_path, $file_name);
-             $url = Storage::url($path);
-         }
+        if ($request->hasFile('image_url')) {
+            $destination_path = 'public/files/images';
+            $image_url = $request->file('image_url');
+            $file_name = $image_url->getClientOriginalName();
+            $path = $request->file('image_url')->storeAs($destination_path, $file_name);
+            $url = Storage::url($path);
+        }
 
         $pharmacist = Pharmacist::query()->create([
-            //'pharmacist_id' => $request->pharmacist_id,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
@@ -102,16 +84,15 @@ class PharmacistController extends Controller
             'name_of_pharmacy' => $request->name_of_pharmacy,
             'landline_phone_number' => $request->landline_phone_number,
             'mobile_number' => $request->mobile_number,
-            'copy_of_the_syndicate_card_url' => $url1,//file('copy_of_the_syndicate_card_url')->store('syndicateCard'),
+            'copy_of_the_syndicate_card_url' => $url1,
             'email' => $request->email,
             'password' => bcrypt(request('password')),
             'password_confirmation' => bcrypt(request('password_confirmation')),
-            'image_url' => $url,//file('image_url')->store('images'),
+            'image_url' => $url,
             'financial_fund' => $request->financial_fund,
         ]);
 
         $authToken = $pharmacist->createToken('auth-token')->plainTextToken;
-
         return response()->json([
             'The Pharmacist' => $pharmacist,
             'Token' => $authToken,
@@ -136,9 +117,10 @@ class PharmacistController extends Controller
         }
         $pharmacistLogin = Pharmacist::query()->where('email', '=', $request->email)->first();
 
-        if (!$pharmacistLogin|| !Hash::check($request->password, $pharmacistLogin->password)) {
+        if (!$pharmacistLogin || !Hash::check($request->password, $pharmacistLogin->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
+                'password' => ['The provided credentials are incorrect.']
             ]);
         }
 
@@ -151,56 +133,123 @@ class PharmacistController extends Controller
         ]);
     }
 
+    //log out by delete token
+
     //----------------------------------------------------------------------
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         $deleted = $request->user()->currentAccessToken()->delete();
         return $deleted == '1' ? response()->json(['message' => 'Deleted']) : $deleted;
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    //----------------------------------------------------------------------
+
+    //delete account by ID
+
+    public function deleteAccount($id)
     {
-        //
+        if ($pharmacist = Pharmacist::query()->find($id)) {
+            $pharmacist->delete();
+            return response()->json(['message: ' => 'deleted'], 200);
+        } else {
+            return response()->json(['message: ' => 'invalid ID'], 422);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    //----------------------------------------------------------------------
+
+    //update pharmacist information
+
+    public function update(Request $request, int $id)
     {
-        //
+        $pharmacist = Pharmacist::query()->find($id);
+        if ($pharmacist == null) {
+            return response([
+                'message' => 'Invalid ID'
+            ], 422);
+        }
+
+        $first_name = $request->input('first_name');
+        $middle_name = $request->input('middle_name');
+        $last_name = $request->input('last_name');
+        $city = $request->input('city');
+        $region = $request->input('region');
+        $name_of_pharmacy = $request->input('name_of_pharmacy');
+        $landline_phone_number = $request->input('landline_phone_number');
+        $mobile_number = $request->input('mobile_number');
+        $email = $request->input('email');
+        $password = bcrypt($request->input('password'));
+        $password_confirmation = bcrypt($request->input('password_confirmation'));
+        $financial_fund = $request->input('financial_fund');
+
+        if ($request->hasFile('copy_of_the_syndicate_card_url')) {
+            $destination_path = 'public/files/syndicateCard';
+            $copy_of_the_syndicate_card_url = $request->file('copy_of_the_syndicate_card_url');
+            $file_name = $copy_of_the_syndicate_card_url->getClientOriginalName();
+            $path = $request->file('copy_of_the_syndicate_card_url')->storeAs($destination_path, $file_name);
+            $url1 = Storage::url($path);
+            $pharmacist->copy_of_the_syndicate_card_url = $url1;
+        }
+
+        if ($request->hasFile('image_url')) {
+            $destination_path = 'public/files/images';
+            $image_url = $request->file('image_url');
+            $file_name = $image_url->getClientOriginalName();
+            $path = $request->file('image_url')->storeAs($destination_path, $file_name);
+            $url = Storage::url($path);
+            $pharmacist->image_url = $url;
+        }
+
+        if ($first_name) {
+            $pharmacist->first_name = $first_name;
+        }
+        if ($middle_name) {
+            $pharmacist->middle_name = $middle_name;
+        }
+        if ($last_name) {
+            $pharmacist->last_name = $last_name;
+        }
+
+        if ($city) {
+            $pharmacist->city = $city;
+        }
+        if ($region) {
+            $pharmacist->region = $region;
+        }
+        if ($name_of_pharmacy) {
+            $pharmacist->name_of_pharmacy = $name_of_pharmacy;
+        }
+        if ($landline_phone_number) {
+            $pharmacist->landline_phone_number = $landline_phone_number;
+        }
+
+        if ($mobile_number) {
+            $pharmacist->mobile_number = $mobile_number;
+        }
+
+        if ($email) {
+            $pharmacist->email = $email;
+        }
+
+        if ($password) {
+            $pharmacist->password = $password;
+        }
+        if ($password_confirmation) {
+            $pharmacist->password_confirmation = $password_confirmation;
+        }
+
+        if ($financial_fund) {
+            $pharmacist->financial_fund = $financial_fund;
+        }
+
+        $pharmacist->save();
+        return response()->json([
+            'message' => 'Updated Successfully', $pharmacist
+        ]);
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
