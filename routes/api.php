@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\PharmacistController;
+use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,13 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::prefix('pharmacist')->group(function () {
     Route::post('/register', [PharmacistController::class, 'register']);
-    Route::group(['middleware' => ['auth:sanctum']], function () {
-        Route::post('/login', [PharmacistController::class, 'login']);
-        Route::post('/logout', [PharmacistController::class, 'logout']);
-    });
+    Route::post('/login', [PharmacistController::class, 'login']);
     Route::delete('/delete/{id}', [PharmacistController::class, 'deleteAccount']);
     Route::post('/update/{id}', [PharmacistController::class, 'update']);
     Route::get('/showProfile/{id}', [PharmacistController::class, 'index']);
-
-
+    Route::post('/forgetPassword', [ForgetPasswordController::class, 'forgetPassword']);
+    Route::post('/resetPassword', [ResetPasswordController::class, 'resetPassword']);
 });
