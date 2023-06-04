@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pharmacist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -53,7 +54,7 @@ class PharmacistController extends Controller
             'password' => ['required', 'string', 'min:8'],
             'password_confirmation' => ['required', 'string', 'min:8'],
             'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'financial_fund' => ['required'],
+            'financial_fund' => 'required|numeric',
         ]);
 
         if ($request->hasFile('copy_of_the_syndicate_card_url')) {
@@ -117,7 +118,7 @@ class PharmacistController extends Controller
         }
         $pharmacistLogin = Pharmacist::query()->where('email', '=', $request->email)->first();
 
-        if (!$pharmacistLogin || !Hash::check($request->password, $pharmacistLogin->password)) {
+        if (!$pharmacistLogin||Hash::check($request->password, $pharmacistLogin->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
                 'password' => ['The provided credentials are incorrect.']
@@ -133,7 +134,7 @@ class PharmacistController extends Controller
         ]);
     }
 
-    //log out by delete token
+  /*  //log out by delete token
 
     //----------------------------------------------------------------------
 
@@ -144,7 +145,7 @@ class PharmacistController extends Controller
 
     }
 
-    //----------------------------------------------------------------------
+    //----------------------------------------------------------------------*/
 
     //delete account by ID
 
