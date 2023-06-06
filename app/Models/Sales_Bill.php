@@ -10,7 +10,7 @@ class Sales_Bill extends Model
     use HasFactory;
 
     protected $fillable = [
-        'sales_bill_id',
+        //'sales_bill_id',
         'pharmacist_id',
         'today\'s date',
         'material_name',
@@ -22,13 +22,22 @@ class Sales_Bill extends Model
 
     ];
 
-    public function salesBillsMedicines(){
-        return $this->hasMany(Sales_Bill_Medicine::class );
+    public function salesBillsMedicines()
+    {
+        return $this->hasMany(Sales_Bill_Medicine::class);
 
     }
 
-    public function salesBillsProducts(){
+    public function salesBillsProducts()
+    {
         return $this->hasMany(Sales_Bill_Product::class);
 
     }
+
+    protected $casts = [
+        'pharmacist_id' => 'integer',
+        'quantity_sold' => 'integer',
+        'unit_price' => 'double',
+        'total_price' => 'double',
+    ];
 }

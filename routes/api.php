@@ -28,4 +28,5 @@ Route::prefix('pharmacist')->group(function () {
     Route::get('/showProfile/{id}', [PharmacistController::class, 'index']);
     Route::post('/forgetPassword', [ForgetPasswordController::class, 'forgetPassword']);
     Route::post('/resetPassword', [ResetPasswordController::class, 'resetPassword']);
+
 });

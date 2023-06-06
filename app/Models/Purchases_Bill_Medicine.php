@@ -11,9 +11,14 @@ class Purchases_Bill_Medicine extends Model
 
     protected $fillable = [
 
-        'purchases_bill_medicine_id',
+        // 'purchases_bill_medicine_id',
         'medicine_id ',
         'purchases_bill_id ',
     ];
 
+    protected $casts = [
+
+        'medicine_id ' => 'integer',
+        'purchases_bill_id ' => 'integer',
+    ];
 }

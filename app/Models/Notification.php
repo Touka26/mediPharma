@@ -11,9 +11,13 @@ class Notification extends Model
 
     protected $fillable = [
 
-        'notification_id',
+        /*'notification_id',*/
         'admin_id',
         'title',
 
+    ];
+
+    protected $casts = [
+        'admin_id'=>'integer',
     ];
 }
