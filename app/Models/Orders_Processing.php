@@ -11,9 +11,15 @@ class Orders_Processing extends Model
 
     protected $fillable = [
 
-        'order_processing_id',
+       // 'order_processing_id',
         'pharmacist_id',
         'admin_id',
         'order_confirmation',
     ];
+
+    protected $casts = [
+        'pharmacist_id' => 'integer',
+        'admin_id' => 'integer',
+    ];
+
 }

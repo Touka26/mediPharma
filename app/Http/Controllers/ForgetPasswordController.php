@@ -6,6 +6,7 @@ use App\Http\Requests\ForgetPasswordRequest;
 use App\Models\Pharmacist;
 use App\Notifications\ResetPasswordVerificationNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ForgetPasswordController extends Controller
 {
@@ -16,4 +17,7 @@ class ForgetPasswordController extends Controller
         $success['success'] = 'show your email';
         return response()->json($success,200);
     }
+
+
+
 }

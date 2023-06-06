@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->id();
            // $table->integer('medicine_id')->unique();
-            $table->integer('company_id')->unsigned();
+            $table->integer('manufacture_id')->unsigned();
             $table->string('barcode');
             $table->string('trade_name');
             $table->string('combination');

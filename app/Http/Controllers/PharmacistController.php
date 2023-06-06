@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Pharmacist;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -17,8 +15,9 @@ class PharmacistController extends Controller
 
     public function index($id)
     {
-        $pharmacist = Pharmacist::query()->find($id)->get();
+        $pharmacist = Pharmacist::query()->where('id', $id)->get();
         return response()->json(['message' => 'this is my profile', $pharmacist], 200);
+        // return response()->json($pharmacist, 200);
     }
 
     //------------------------------------------------------------------------
@@ -36,23 +35,22 @@ class PharmacistController extends Controller
                 'error' => $validator->errors()
             ], 400);
         }
-
         $request->validate([
             'first_name' => ['required', 'string', 'max:30'],
             'middle_name' => ['required', 'string', 'max:30'],
             'last_name' => ['required', 'string', 'max:30'],
-            'registration_number' => ['required', 'numeric', 'min:5'],
+            'registration_number' => 'required|numeric|min:4',
             'registration_date' => ['required'],
             'released_on_date' => ['required'],
             'city' => ['required', 'string', 'max:30'],
             'region' => ['required', 'string', 'max:30'],
             'name_of_pharmacy' => ['required', 'string', 'max:30'],
-            'landline_phone_number' => ['required', 'numeric', 'min:15'],
-            'mobile_number' => ['required', 'numeric', 'min:15'],
+            'landline_phone_number' => 'required|numeric|min:10',
+            'mobile_number' => 'required|numeric|min:10',
             'copy_of_the_syndicate_card_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'email' => 'required|email',
-            'password' => ['required', 'string', 'min:8'],
-            'password_confirmation' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'confirmed', 'string', 'min:8'],
+            'password_confirmation' => ['required_with:password', 'same:password', 'string', 'min:8'],
             'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'financial_fund' => 'required|numeric',
         ]);
@@ -94,11 +92,12 @@ class PharmacistController extends Controller
         ]);
 
         $authToken = $pharmacist->createToken('auth-token')->plainTextToken;
+
         return response()->json([
             'The Pharmacist' => $pharmacist,
             'Token' => $authToken,
             'message' => 'Done'
-        ]);
+        ], 200);
     }
 
     //------------------------------------------------------------------------
@@ -116,50 +115,23 @@ class PharmacistController extends Controller
             return $pharmacistLogin->errors()->all();
 
         }
-        $pharmacistLogin = Pharmacist::query()->where('email', '=', $request->email)->first();
+        $pharmacist = Pharmacist::query()->where('email', '=', $request->email)->first();
 
-        if (!$pharmacistLogin||Hash::check($request->password, $pharmacistLogin->password)) {
+        if (!$pharmacist) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
-                'password' => ['The provided credentials are incorrect.']
             ]);
         }
 
-        $authToken = $pharmacistLogin->createToken('auth-token')->plainTextToken;
+        $authToken = $pharmacist->createToken('auth-token')->plainTextToken;
         return response()->json([
-            'Pharmacist' => $pharmacistLogin,
+            //'Pharmacist' => $pharmacist,
             'access_token' => $authToken,
             'message' => 'Done'
 
         ]);
     }
 
-  /*  //log out by delete token
-
-    //----------------------------------------------------------------------
-
-    public function logout(Request $request)
-    {
-        $deleted = $request->user()->currentAccessToken()->delete();
-        return $deleted == '1' ? response()->json(['message' => 'Deleted']) : $deleted;
-
-    }
-
-    //----------------------------------------------------------------------*/
-
-    //delete account by ID
-
-    public function deleteAccount($id)
-    {
-        if ($pharmacist = Pharmacist::query()->find($id)) {
-            $pharmacist->delete();
-            return response()->json(['message: ' => 'deleted'], 200);
-        } else {
-            return response()->json(['message: ' => 'invalid ID'], 422);
-        }
-    }
-
-    //----------------------------------------------------------------------
 
     //update pharmacist information
 
@@ -251,6 +223,34 @@ class PharmacistController extends Controller
         ]);
 
     }
+
+
+    /*  //log out by delete token
+
+      //----------------------------------------------------------------------
+
+      public function logout(Request $request)
+      {
+          $deleted = $request->user()->currentAccessToken()->delete();
+          return $deleted == '1' ? response()->json(['message' => 'Deleted']) : $deleted;
+
+      }
+
+      //----------------------------------------------------------------------*/
+
+    //delete account by ID
+
+    public function deleteAccount($id)
+    {
+        if ($pharmacist = Pharmacist::query()->find($id)) {
+            $pharmacist->delete();
+            return response()->json(['message: ' => 'deleted'], 200);
+        } else {
+            return response()->json(['message: ' => 'invalid ID'], 422);
+        }
+    }
+
+    //----------------------------------------------------------------------
 
 
 }

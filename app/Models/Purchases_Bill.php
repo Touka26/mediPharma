@@ -10,7 +10,7 @@ class Purchases_Bill extends Model
     use HasFactory;
 
     protected $fillable = [
-        'purchases_bill_id',
+        //  'purchases_bill_id',
         'pharmacist_id',
         'today\'s date',
         'material_name',
@@ -22,13 +22,22 @@ class Purchases_Bill extends Model
         'image_url',
     ];
 
-    public function purchasesBillsMedicines(){
-        return $this->hasMany(Purchases_Bill_Medicine::class );
+    public function purchasesBillsMedicines()
+    {
+        return $this->hasMany(Purchases_Bill_Medicine::class);
 
     }
 
-    public function purchasesBillsProducts(){
-        return $this->hasMany(Purchases_Bill_Product::class );
+    public function purchasesBillsProducts()
+    {
+        return $this->hasMany(Purchases_Bill_Product::class);
 
     }
+
+    protected $casts = [
+        'pharmacist_id' => 'integer',
+        'all_amount' => 'integer',
+        'unit_price' => 'double',
+        'total_price' => 'double',
+    ];
 }

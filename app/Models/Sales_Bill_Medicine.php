@@ -12,9 +12,14 @@ class Sales_Bill_Medicine extends Model
 
     protected $fillable = [
 
-        'sales_bill_medicine_id',
+        //'sales_bill_medicine_id',
         'medicine_id ',
         'sales_bill_id ',
+    ];
+
+    protected $casts = [
+        'medicine_id ' => 'integer',
+        'sales_bill_id ' => 'integer',
     ];
 }
 

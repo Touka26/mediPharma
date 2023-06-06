@@ -10,7 +10,7 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
-        'employee_id',
+        // 'employee_id',
         'pharmacist_id',
         'first_name',
         'last_name',
@@ -24,5 +24,11 @@ class Employee extends Model
         'image_url',
 
 
+    ];
+
+    protected $casts = [
+        'salary' => 'double',
+        'lock' => 'integer',
+        'confirmation_lock' => 'integer',
     ];
 }

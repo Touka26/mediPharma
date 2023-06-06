@@ -58,4 +58,13 @@ class Pharmacist extends Model
         return $this->hasMany(Sales_Bill::class,'sales_bill_id');
     }
 
+    protected $casts = [
+        'registration_number' => 'integer',
+        'landline_phone_number' => 'integer',
+        'mobile_number' => 'integer',
+        'financial_fund' => 'double',
+        /*'registration_date'=>'date',
+        'released_on_date'=>'date',*/
+    ];
+
 }

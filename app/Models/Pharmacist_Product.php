@@ -11,8 +11,14 @@ class Pharmacist_Product extends Model
 
     protected $fillable = [
 
-        'pharmacist_product_id',
+      //  'pharmacist_product_id',
         'pharmacist_id',
         'product_id',
     ];
+     protected $casts = [
+
+         'pharmacist_id' => 'integer',
+         'product_id'=> 'integer',
+         ];
+
 }

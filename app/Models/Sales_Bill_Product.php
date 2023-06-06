@@ -11,8 +11,13 @@ class Sales_Bill_Product extends Model
 
     protected $fillable = [
 
-        'sales_bill_product_id',
+        //  'sales_bill_product_id',
         'product_id ',
         'sales_bill_id ',
-        ];
+    ];
+
+    protected $casts = [
+        'product_id ' => 'integer',
+        'sales_bill_id ' => 'integer',
+    ];
 }

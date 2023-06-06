@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
            // $table->integer('category_id')->unique();
             $table->string('section')->unique();
-
             $table->timestamps();
         });
     }

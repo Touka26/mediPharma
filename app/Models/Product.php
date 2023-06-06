@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $fillable = [
 
-        'product_id',
+        //'product_id',
         'category_id',
         'barcode',
         'name',
@@ -41,5 +41,12 @@ class Product extends Model
         return $this->hasMany(Pharmacist_Product::class );
 
     }
+
+    protected $casts = [
+        'category_id' => 'integer',
+        'amount' => 'integer',
+        'common_price' => 'double',
+        'total_price' => 'double',
+        ];
 
 }

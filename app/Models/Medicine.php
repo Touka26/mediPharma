@@ -10,8 +10,8 @@ class Medicine extends Model
     use HasFactory;
 
     protected $fillable = [
-        'medicine_id',
-        'company_id',
+        //'medicine_id',
+        'manufacture_id',
         'barcode',
         'trade_name',
         'combination',
@@ -39,4 +39,11 @@ class Medicine extends Model
     public function salesBillMedicines(){
         return $this->hasMany(Sales_Bill_Medicine::class );
     }
+
+    protected $casts = [
+        'manufacture_id' => 'integer',
+        'amount'=> 'integer',
+        'id_number'=> 'integer',
+        'common_price' => 'double',
+        ];
 }

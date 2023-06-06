@@ -10,9 +10,14 @@ class Pharmacist_Medicine extends Model
     use HasFactory;
 
     protected $fillable = [
-        'pharmacist_medicine_id',
+      //  'pharmacist_medicine_id',
         'pharmacist_id',
         'medicine_id',
 
     ];
+
+    protected $casts = [
+        'pharmacist_id' => 'integer',
+        'medicine_id' => 'integer',
+        ];
 }
