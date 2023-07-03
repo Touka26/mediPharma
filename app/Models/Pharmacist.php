@@ -14,7 +14,7 @@ class Pharmacist extends Model
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'pharmacist_id',
+       // 'pharmacist_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -43,7 +43,7 @@ class Pharmacist extends Model
     }
 
     public function orderProcessing(){
-        return $this->belongsTo(Orders_Processing::class , 'pharmacist_id');
+        return $this->belongsTo(Orders_Processing::class);
     }
 
     public function employees(){
@@ -65,6 +65,12 @@ class Pharmacist extends Model
         'financial_fund' => 'double',
         /*'registration_date'=>'date',
         'released_on_date'=>'date',*/
+    ];
+
+    protected $hidden = [
+        'password',
+        'password_confirmation',
+        'remember_token',
     ];
 
 }

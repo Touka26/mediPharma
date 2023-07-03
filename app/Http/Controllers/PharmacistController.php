@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Pharmacist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\Console\Input\Input;
 
 class PharmacistController extends Controller
 {
@@ -143,28 +145,12 @@ class PharmacistController extends Controller
                 'message' => 'Invalid ID'
             ], 422);
         }
-
-        $first_name = $request->input('first_name');
-        $middle_name = $request->input('middle_name');
-        $last_name = $request->input('last_name');
         $city = $request->input('city');
         $region = $request->input('region');
         $name_of_pharmacy = $request->input('name_of_pharmacy');
         $landline_phone_number = $request->input('landline_phone_number');
         $mobile_number = $request->input('mobile_number');
-        $email = $request->input('email');
-        $password = bcrypt($request->input('password'));
-        $password_confirmation = bcrypt($request->input('password_confirmation'));
         $financial_fund = $request->input('financial_fund');
-
-        if ($request->hasFile('copy_of_the_syndicate_card_url')) {
-            $destination_path = 'public/files/syndicateCard';
-            $copy_of_the_syndicate_card_url = $request->file('copy_of_the_syndicate_card_url');
-            $file_name = $copy_of_the_syndicate_card_url->getClientOriginalName();
-            $path = $request->file('copy_of_the_syndicate_card_url')->storeAs($destination_path, $file_name);
-            $url1 = Storage::url($path);
-            $pharmacist->copy_of_the_syndicate_card_url = $url1;
-        }
 
         if ($request->hasFile('image_url')) {
             $destination_path = 'public/files/images';
@@ -175,15 +161,9 @@ class PharmacistController extends Controller
             $pharmacist->image_url = $url;
         }
 
-        if ($first_name) {
-            $pharmacist->first_name = $first_name;
-        }
-        if ($middle_name) {
-            $pharmacist->middle_name = $middle_name;
-        }
-        if ($last_name) {
-            $pharmacist->last_name = $last_name;
-        }
+
+
+
 
         if ($city) {
             $pharmacist->city = $city;
@@ -201,21 +181,10 @@ class PharmacistController extends Controller
         if ($mobile_number) {
             $pharmacist->mobile_number = $mobile_number;
         }
-
-        if ($email) {
-            $pharmacist->email = $email;
-        }
-
-        if ($password) {
-            $pharmacist->password = $password;
-        }
-        if ($password_confirmation) {
-            $pharmacist->password_confirmation = $password_confirmation;
-        }
-
         if ($financial_fund) {
             $pharmacist->financial_fund = $financial_fund;
         }
+
 
         $pharmacist->save();
         return response()->json([
