@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\PharmacistController;
 use App\Http\Controllers\ResetPasswordController;
@@ -29,4 +30,15 @@ Route::prefix('pharmacist')->group(function () {
     Route::post('/forgetPassword', [ForgetPasswordController::class, 'forgetPassword']);
     Route::post('/resetPassword', [ResetPasswordController::class, 'resetPassword']);
 
+});
+
+Route::prefix('employee')->group(function () {
+    Route::post('/add', [EmployeeController::class, 'store']);
+    Route::post('/update/{id}', [EmployeeController::class, 'update']);
+    Route::post('/addMonthSalary', [EmployeeController::class, 'addMonthSalary']);
+    Route::get('/index', [EmployeeController::class, 'index']);
+    Route::get('/show', [EmployeeController::class, 'show']);
+    Route::get('/countOfEmployee', [EmployeeController::class, 'countOfEmployee']);
+    Route::get('/displayMonth/{id}', [EmployeeController::class, 'displayMonth']);
+    Route::delete('/destroy/{id}', [EmployeeController::class, 'destroy']);
 });

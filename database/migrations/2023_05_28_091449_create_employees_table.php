@@ -22,12 +22,9 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('email')->unique();
             $table->string('CV_file');
-            $table->double('salary');
-            $table->integer('lock');
-            $table->integer('confirmation_lock');
+            $table->integer('phone_num');
             $table->date('work_start_date');
             $table->string('image_url');
-
             $table->timestamps();
         });
     }

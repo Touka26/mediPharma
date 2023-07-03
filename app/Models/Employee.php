@@ -17,9 +17,7 @@ class Employee extends Model
         'birth_date',
         'email',
         'CV_file',
-        'salary',
-        'lock',
-        'confirmation_lock',
+        'phone_num',
         'work_start_date',
         'image_url',
 
@@ -27,8 +25,12 @@ class Employee extends Model
     ];
 
     protected $casts = [
-        'salary' => 'double',
-        'lock' => 'integer',
-        'confirmation_lock' => 'integer',
+        'pharmacist_id' => 'integer',
+        'phone_num' => 'integer',
+
     ];
+
+    public function monthly(){
+        return $this->belongsTo(Month::class);
+    }
 }
