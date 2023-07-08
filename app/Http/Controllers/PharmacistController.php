@@ -162,9 +162,6 @@ class PharmacistController extends Controller
         }
 
 
-
-
-
         if ($city) {
             $pharmacist->city = $city;
         }
@@ -185,7 +182,6 @@ class PharmacistController extends Controller
             $pharmacist->financial_fund = $financial_fund;
         }
 
-
         $pharmacist->save();
         return response()->json([
             'message' => 'Updated Successfully', $pharmacist
@@ -193,6 +189,27 @@ class PharmacistController extends Controller
 
     }
 
+    public function change_password(Request $request, $id)
+    {
+        $pharmacist = Pharmacist::query()->find($id);
+        if ($pharmacist == null) {
+            return response([
+                'message' => 'Invalid ID'
+            ], 422);
+        }
+        $request->validate([
+            'password' => ['required', 'confirmed', 'string', 'min:8'],
+            'password_confirmation' => ['required_with:password', 'same:password', 'string', 'min:8'],
+        ]);
+        $password = Pharmacist::query()->update([
+            'password' => bcrypt(request('password')),
+            'password_confirmation' => bcrypt(request('password_confirmation')),
+        ]);
+        return response()->json([
+            'message' =>'updated successfully',
+            $password
+        ]);
+    }
 
     /*  //log out by delete token
 

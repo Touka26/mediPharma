@@ -28,6 +28,7 @@ Route::prefix('pharmacist')->group(function () {
     Route::post('/login', [PharmacistController::class, 'login']);
     Route::delete('/delete/{id}', [PharmacistController::class, 'deleteAccount']);
     Route::post('/update/{id}', [PharmacistController::class, 'update']);
+    Route::post('/change_password/{id}', [PharmacistController::class, 'change_password']);
     Route::get('/showProfile/{id}', [PharmacistController::class, 'index']);
     Route::post('/forgetPassword', [ForgetPasswordController::class, 'forgetPassword']);
     Route::post('/resetPassword', [ResetPasswordController::class, 'resetPassword']);
