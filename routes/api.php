@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ForgetPasswordController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PharmacistController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -42,3 +44,22 @@ Route::prefix('employee')->group(function () {
     Route::get('/displayMonth/{id}', [EmployeeController::class, 'displayMonth']);
     Route::delete('/destroy/{id}', [EmployeeController::class, 'destroy']);
 });
+
+Route::prefix('medicine')->group(function () {
+    Route::post('/add', [MedicineController::class, 'store']);
+    Route::post('/update/{id}', [MedicineController::class, 'update']);
+    Route::get('/show/{id}', [MedicineController::class, 'show']);
+    Route::get('/index', [MedicineController::class, 'index']);
+    Route::get('/searchByBarcode/{barcode}', [MedicineController::class, 'searchByBarcode']);
+    Route::get('/searchByTradeName/{trade}', [MedicineController::class, 'searchByTradeName']);
+
+});
+
+Route::prefix('product')->group(function () {
+    Route::post('/add', [ProductController::class, 'store']);
+    Route::post('/update/{id}', [ProductController::class, 'update']);
+    Route::get('/searchByBarcode/{barcode}', [ProductController::class, 'searchByBarcode']);
+    Route::get('/searchByName/{name}', [ProductController::class, 'searchByName']);
+    Route::get('/show/{id}', [ProductController::class, 'show']);
+});
+

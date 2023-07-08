@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
 
         //'product_id',
@@ -19,26 +17,31 @@ class Product extends Model
         'combination',
         'caliber',
         'amount',
+        'piece\'s_price',
         'common_price',
-        'total_price',
         'image_url',
         'production_date',
         'expiration_date',
 
     ];
 
-    public function purshasesBillsProducts(){
-        return $this->hasMany(Purchases_Bill_Product::class , 'product_id');
+    use HasFactory;
+
+    public function purshasesBillsProducts()
+    {
+        return $this->hasMany(Purchases_Bill_Product::class, 'product_id');
 
     }
 
-    public function salesBillsProducts(){
-        return $this->hasMany(Sales_Bill_Product::class );
+    public function salesBillsProducts()
+    {
+        return $this->hasMany(Sales_Bill_Product::class);
 
     }
 
-    public function pharmacistProducts(){
-        return $this->hasMany(Pharmacist_Product::class );
+    public function pharmacistProducts()
+    {
+        return $this->hasMany(Pharmacist_Product::class);
 
     }
 
@@ -46,7 +49,7 @@ class Product extends Model
         'category_id' => 'integer',
         'amount' => 'integer',
         'common_price' => 'double',
-        'total_price' => 'double',
-        ];
+        'piece\'s_price' => 'double',
+    ];
 
 }

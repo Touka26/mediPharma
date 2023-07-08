@@ -18,7 +18,9 @@ class Medicine extends Model
         'caliber',
         'type',
         'pharmaceutical_form',
+        'net_price',
         'common_price',
+//        'total_price',
         'amount',
         'statement',
         'prescription_url',
@@ -28,22 +30,28 @@ class Medicine extends Model
         'expiration_date',
     ];
 
-    public function pharmacistsMedicines(){
-        return $this->hasMany(Pharmacist_Medicine::class );
+    public function pharmacistsMedicines()
+    {
+        return $this->hasMany(Pharmacist_Medicine::class);
     }
 
-    public function purchasesBillMedicines(){
-        return $this->hasMany(Purchases_Bill_Medicine::class );
+    public function purchasesBillMedicines()
+    {
+        return $this->hasMany(Purchases_Bill_Medicine::class);
     }
 
-    public function salesBillMedicines(){
-        return $this->hasMany(Sales_Bill_Medicine::class );
+    public function salesBillMedicines()
+    {
+        return $this->hasMany(Sales_Bill_Medicine::class);
     }
 
     protected $casts = [
         'manufacture_id' => 'integer',
-        'amount'=> 'integer',
-        'id_number'=> 'integer',
+        'amount' => 'integer',
+        'id_number' => 'integer',
+        'net_price' => 'double',
         'common_price' => 'double',
-        ];
+//        'total_price' => 'double',
+        'statement' => 'boolean'
+    ];
 }
