@@ -23,11 +23,13 @@ return new class extends Migration
             $table->string('caliber');
             $table->string('type');
             $table->string('pharmaceutical_form');
+            $table->double('net_price');
             $table->double('common_price');
+//            $table->double('total_price');
             $table->integer('amount');
             $table->boolean('statement');
-            $table->string('prescription_url');
-            $table->integer('id_number')->unique();
+            $table->string('prescription_url')->nullable();
+            $table->integer('id_number')->unique()->nullable();
             $table->string('image_url');
             $table->date('production_date');
             $table->date('expiration_date');

@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-          //  $table->integer('product_id')->unique();
+            //  $table->integer('product_id')->unique();
             $table->integer('category_id')->unsigned();
             $table->string('barcode');
             $table->string('name');
@@ -22,12 +22,12 @@ return new class extends Migration {
             $table->string('combination')->nullable();
             $table->string('caliber')->nullable();
             $table->integer('amount');
+            $table->double('piece\'s_price');
             $table->double('common_price');
-            $table->double('total_price');
+//            $table->double('total_price');
             $table->string('image_url');
-            $table->date('production_date')->nullable();
-            $table->date('expiration_date')->nullable();
-
+            $table->date('production_date');
+            $table->date('expiration_date');
             $table->timestamps();
         });
     }
