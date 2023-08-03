@@ -13,8 +13,23 @@ use Symfony\Component\Console\Input\Input;
 class PharmacistController extends Controller
 {
 
-    //show a specific profile
+    //get financial fund by pharmacist id
+    public function getBox($id)
+    {
+        $pharmacist = Pharmacist::query()->find($id);
+        if ($pharmacist == null) {
+            return response([
+                'message' => 'Invalid ID'
+            ], 422);
+        }
+        $pharmacist = Pharmacist::query()
+            ->where('id', '=', $id)
+            ->select('financial_fund')->get();
+        return response()->json(['the financial fund' => $pharmacist], 200);
+    }
 
+//-------------------------------------------------------------------------------------------------
+    //show a specific profile
     public function index($id)
     {
         $pharmacist = Pharmacist::query()->where('id', $id)->get();
@@ -22,10 +37,9 @@ class PharmacistController extends Controller
         // return response()->json($pharmacist, 200);
     }
 
-    //------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
     //Register for Pharmacist
-
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -102,10 +116,9 @@ class PharmacistController extends Controller
         ], 200);
     }
 
-    //------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
     //Login for Pharmacist
-
     public function login(Request $request)
     {
         $pharmacistLogin = Validator::make($request->all(), [
@@ -134,9 +147,9 @@ class PharmacistController extends Controller
         ]);
     }
 
+//-------------------------------------------------------------------------------------------------
 
     //update pharmacist information
-
     public function update(Request $request, int $id)
     {
         $pharmacist = Pharmacist::query()->find($id);
@@ -150,7 +163,7 @@ class PharmacistController extends Controller
         $name_of_pharmacy = $request->input('name_of_pharmacy');
         $landline_phone_number = $request->input('landline_phone_number');
         $mobile_number = $request->input('mobile_number');
-        $financial_fund = $request->input('financial_fund');
+
 
         if ($request->hasFile('image_url')) {
             $destination_path = 'public/files/images';
@@ -160,8 +173,12 @@ class PharmacistController extends Controller
             $url = Storage::url($path);
             $pharmacist->image_url = $url;
         }
+        if ($request->has('financial_fund')) {
+            $old_fund = $pharmacist->financial_fund;
+            $new_fund = (float)$request->input('financial_fund');
 
-
+            $pharmacist->financial_fund = $old_fund + $new_fund;
+        }
         if ($city) {
             $pharmacist->city = $city;
         }
@@ -178,9 +195,7 @@ class PharmacistController extends Controller
         if ($mobile_number) {
             $pharmacist->mobile_number = $mobile_number;
         }
-        if ($financial_fund) {
-            $pharmacist->financial_fund = $financial_fund;
-        }
+
 
         $pharmacist->save();
         return response()->json([
@@ -189,6 +204,9 @@ class PharmacistController extends Controller
 
     }
 
+//-------------------------------------------------------------------------------------------------
+
+    //change password
     public function change_password(Request $request, $id)
     {
         $pharmacist = Pharmacist::query()->find($id);
@@ -206,26 +224,23 @@ class PharmacistController extends Controller
             'password_confirmation' => bcrypt(request('password_confirmation')),
         ]);
         return response()->json([
-            'message' =>'updated successfully',
+            'message' => 'updated successfully',
             $password
         ]);
     }
 
+//-------------------------------------------------------------------------------------------------
+
     /*  //log out by delete token
-
-      //----------------------------------------------------------------------
-
-      public function logout(Request $request)
+       public function logout(Request $request)
       {
           $deleted = $request->user()->currentAccessToken()->delete();
           return $deleted == '1' ? response()->json(['message' => 'Deleted']) : $deleted;
+      }*/
 
-      }
-
-      //----------------------------------------------------------------------*/
+//-------------------------------------------------------------------------------------------------
 
     //delete account by ID
-
     public function deleteAccount($id)
     {
         if ($pharmacist = Pharmacist::query()->find($id)) {
@@ -236,7 +251,57 @@ class PharmacistController extends Controller
         }
     }
 
-    //----------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
+    //search product or medicine by name
+    public function searchByName($name)
+    {
+        $medicines = DB::table('medicines')->where('trade_name', $name)->get();
+        $products = DB::table('products')->where('name', $name)->get();
+
+        $results = [];
+
+        if (!$medicines->isEmpty()) {
+            $results['medicines'] = $medicines;
+        }
+
+        if (!$products->isEmpty()) {
+            $results['products'] = $products;
+        }
+
+        if (!empty($results)) {
+            return response()->json(['message' => $results], 200);
+        } else {
+            return response()->json(['message' => 'No matching medicine or product found'], 404);
+        }
+
+    }
+
+//-------------------------------------------------------------------------------------------------
+
+    //search product or medicine by barcode
+    public function searchByBarcode($barcode)
+    {
+        $medicines = DB::table('medicines')->where('barcode', $barcode)->get();
+        $products = DB::table('products')->where('barcode', $barcode)->get();
+
+        $response = [];
+
+        if (!$medicines->isEmpty()) {
+            $response['medicines'] = $medicines;
+        }
+
+        if (!$products->isEmpty()) {
+            $response['products'] = $products;
+        }
+
+        if (!empty($response)) {
+            return response()->json(['message' => $response], 200);
+        } else {
+            return response()->json(['message' => 'No matching medicine or product found'], 404);
+        }
+    }
+
+//-------------------------------------------------------------------------------------------------
 
 }

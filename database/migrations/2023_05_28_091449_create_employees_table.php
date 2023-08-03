@@ -26,6 +26,8 @@ return new class extends Migration
             $table->date('work_start_date');
             $table->string('image_url');
             $table->timestamps();
+
+//            $table->foreign('pharmacist_id')->references('id')->on('pharmacists');
         });
     }
 

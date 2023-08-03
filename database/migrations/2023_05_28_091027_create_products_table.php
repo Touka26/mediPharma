@@ -24,11 +24,12 @@ return new class extends Migration {
             $table->integer('amount');
             $table->double('piece\'s_price');
             $table->double('common_price');
-//            $table->double('total_price');
             $table->string('image_url');
             $table->date('production_date');
             $table->date('expiration_date');
             $table->timestamps();
+
+         //   $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

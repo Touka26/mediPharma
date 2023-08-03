@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\Month;
+use App\Models\Pharmacist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,21 +13,15 @@ use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
 
     //Display employees by name, image and salary
-
     public function index()
     {
+        $employees = DB::table('employees')
+            ->select('id', 'first_name', 'image_url')
+            ->get();
 
-        $employee = DB::table('employees')
-            ->select('id', 'first_name', 'image_url')->get();
-
-        $employeeSalary = DB::table('months')
+        $employeeSalaries = DB::table('months')
             ->select('employee_id', 'salary')
             ->whereIn('id', function ($query) {
                 $query->selectRaw('MAX(id)')
@@ -35,36 +30,48 @@ class EmployeeController extends Controller
             })
             ->get();
 
-        $merged = $employee->merge($employeeSalary);
-        $result = $merged->all();
-        return response()->json(['message' => 'done',
-            $result]);
+        // Merge salaries with corresponding employees
+        $mergedData = $employees->map(function ($employee) use ($employeeSalaries) {
+            $salaryData = $employeeSalaries->where('employee_id', $employee->id)->first();
+            $employee->salary = $salaryData ? $salaryData->salary : null;
+            return $employee;
+        });
+
+        return response()->json(['message' => 'done', 'data' => $mergedData], 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
+//-------------------------------------------------------------------------------------------------
 
-    //Display profile all employees
 
-    public function show()
+    //Display profile employees by ID
+    public function show($id)
     {
+        $employee = Employee::query()->where('id', '=', $id)->first();
+        $salary = Month::query()->where('employee_id', '=', $id)->select('salary')->orderByDesc('id')->first();
 
-        $employee = DB::table('employees')->get();
+        if (!$employee) {
+            return response()->json(['message' => 'Invalid ID'], 404);
+        }
 
-        return response()->json([
-            'message' => 'Done',
-            $employee
-        ]);
+        if ($salary) {
+            $employee->salary = $salary->salary;
+        }
+
+        return response()->json(['message' => 'The employee', 'employee' => $employee], 200);
     }
+
+//-------------------------------------------------------------------------------------------------
 
     //Display payment months by employee_id
-
     public function displayMonth($id)
+
     {
+        $employee = Employee::query()->find($id);
+        if ($employee == null) {
+            return response([
+                'message' => 'Invalid ID'
+            ], 422);
+        }
         $employee = Month::query()->where('employee_id', $id)->first();
 
         if ($employee == null) {
@@ -82,8 +89,9 @@ class EmployeeController extends Controller
         ]);
     }
 
-    //Calculate count of employee
+//-------------------------------------------------------------------------------------------
 
+    //Calculate count of employee
     public function countOfEmployee()
     {
         $employees = DB::table('employees')->count();
@@ -92,18 +100,11 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+//-------------------------------------------------------------------------------------------------
 
     //Store employee
-
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|unique:employees,email'
         ]);
@@ -115,7 +116,7 @@ class EmployeeController extends Controller
         }
 
         $request->validate([
-            'pharmacist_id' => 'required',
+            'pharmacist_id' => 'required|exists:pharmacists,id',
             'first_name' => ['required', 'string', 'max:30'],
             'last_name' => ['required', 'string', 'max:30'],
             'birth_date' => ['required'],
@@ -149,7 +150,7 @@ class EmployeeController extends Controller
             'email' => $request->email,
             'CV_file' => $CV,
             'phone_num' => $request->phone_num,
-            'work_start_date' => $request->work_start_date = Carbon::now(),
+            'work_start_date' => $request->work_start_date = Carbon::now()->format('Y-m-d'),
             'image_url' => $image,
         ]);
 
@@ -159,17 +160,9 @@ class EmployeeController extends Controller
         ], 200);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
+//-------------------------------------------------------------------------------------------------
 
     // Update employee
-
     public function update(Request $request, $id)
     {
 
@@ -229,6 +222,7 @@ class EmployeeController extends Controller
 
     }
 
+//-------------------------------------------------------------------------------------------------
 
     //Store month and salary for each employee
     public function addMonthSalary(Request $request)
@@ -243,18 +237,24 @@ class EmployeeController extends Controller
             'month' => $request->month,
             'salary' => $request->salary,
         ]);
+        $employee = Employee::query()
+            ->where('id', '=', $request->employee_id)
+            ->select('pharmacist_id')->first();
+        if ($employee) {
+            $pharmacistId = $employee->pharmacist_id;
+            $pharmacist = Pharmacist::query()->where('id', $pharmacistId)->first();
+            if ($pharmacist) {
+                $pharmacist->financial_fund -= $request->salary;
+                $pharmacist->save();
+            }
+        }
         return response()->json([
             'Monthly salary' => $monthSalary,
             'message' => 'Done'
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
+//-------------------------------------------------------------------------------------------------
 
     // Delete employee from data base
     public function destroy($id)
@@ -267,5 +267,5 @@ class EmployeeController extends Controller
         }
     }
 
-
+//-------------------------------------------------------------------------------------------------
 }

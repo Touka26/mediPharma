@@ -47,15 +47,15 @@ class Pharmacist extends Model
     }
 
     public function employees(){
-        return $this->hasMany(Employee::class , 'pharmacist_id');
+        return $this->hasMany(Employee::class);
     }
 
-    public function purchasesBills(){
-        return $this->hasMany(Purchases_Bill::class , 'pharmacist_id');
+    public function purchases_Bills(){
+        return $this->hasMany(Purchases_Bill::class);
     }
 
-    public function salesBills(){
-        return $this->hasMany(Sales_Bill::class,'sales_bill_id');
+    public function sales_Bills(){
+        return $this->hasMany(Sales_Bill::class);
     }
 
     protected $casts = [

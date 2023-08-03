@@ -9,39 +9,12 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    //search by barcode
-    public function searchByBarcode($barcode)
-    {
-        $product = DB::table('products')->where('barcode', '=', $barcode)->first();
-        if ($product == null) {
-            return response()->json(['message' => 'The product is not exist'], 404);
-        } else
 
-            return response()->json(['message' => 'The Product ', $product], 200);
-    }
-
-    //search by name
-    public function searchByName($name)
-    {
-        $product = DB::table('products')->where('name', '=', $name)->first();
-        if ($product == null) {
-            return response()->json(['message' => 'The product is not exist'], 404);
-        } else
-
-            return response()->json(['message' => 'The Product ', $product], 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
     //add product
     public function store(Request $request)
     {
         $request->validate([
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'barcode' => 'required',
             'name' => 'required|string|max:50',
             'type' => 'required|string|max:50',
@@ -82,13 +55,9 @@ class ProductController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
-    //display by company medicine
+//-----------------------------------------------------------------------------------------------------
+
+    //display by Category
     public function show($id)
     {
         $category = Product::query()->where('category_id', $id)->first();
@@ -98,21 +67,28 @@ class ProductController extends Controller
         }
         $product = DB::table('products')
             ->where('category_id', '=', $id)
-            ->select('name', 'amount', 'image_url')
+            ->select('name', 'amount', 'image_url','common_price')
             ->get();
         return response()->json(['message' => 'The product for this section',
             $product], 200);
     }
 
+//-----------------------------------------------------------------------------------------------------
 
+    // display product by product id
+    public function showProduct($id)
+    {
+        $product = Product::query()->where('id', '=', $id)->first();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
+        if (!$product) {
+            return response()->json(['message' => 'Invalid ID'], 404);
+        }
+
+        return response()->json(['message' => 'The product', 'product' => $product], 200);
+    }
+
+//-----------------------------------------------------------------------------------------------------
+
     //update product
     public function update(Request $request, $id)
     {

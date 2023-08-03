@@ -10,7 +10,6 @@ class Medicine extends Model
     use HasFactory;
 
     protected $fillable = [
-        //'medicine_id',
         'manufacture_id',
         'barcode',
         'trade_name',
@@ -20,7 +19,6 @@ class Medicine extends Model
         'pharmaceutical_form',
         'net_price',
         'common_price',
-//        'total_price',
         'amount',
         'statement',
         'prescription_url',
@@ -35,14 +33,13 @@ class Medicine extends Model
         return $this->hasMany(Pharmacist_Medicine::class);
     }
 
-    public function purchasesBillMedicines()
+    public function purchasesDetails()
     {
-        return $this->hasMany(Purchases_Bill_Medicine::class);
+        return $this->hasMany(Purchases_Detail::class);
     }
 
-    public function salesBillMedicines()
-    {
-        return $this->hasMany(Sales_Bill_Medicine::class);
+    public function store(){
+        return $this->hasMany(Store::class);
     }
 
     protected $casts = [
@@ -51,7 +48,6 @@ class Medicine extends Model
         'id_number' => 'integer',
         'net_price' => 'double',
         'common_price' => 'double',
-//        'total_price' => 'double',
         'statement' => 'boolean'
     ];
 }
