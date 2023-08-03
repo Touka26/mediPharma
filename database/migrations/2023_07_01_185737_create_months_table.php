@@ -15,10 +15,13 @@ return new class extends Migration
     {
         Schema::create('months', function (Blueprint $table) {
             $table->id();
-            $table->integer('employee_id')->unsigned();
+            $table->unsignedBigInteger('employee_id');
             $table->string('month');
             $table->double('salary');
             $table->timestamps();
+
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
+
         });
     }
 

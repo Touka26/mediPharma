@@ -12,20 +12,20 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('purchases_bills', function (Blueprint $table) {
+
+        Schema::create('purchases__bills', function (Blueprint $table) {
             $table->id();
-           // $table->integer('purchases_bill_id')->unique();
-            $table->integer('pharmacist_id')->unsigned();
-            $table->date('today\'s date');
-            $table->string('material_name');
-            $table->integer('all_amount');
-            $table->double('unit_price');
-            $table->double('total_price');
+            $table->unsignedBigInteger('pharmacist_id');
+            $table->date('today_date');
             $table->string('storehouse_name');
-            $table->string('Statement');
+            $table->string('statement');
             $table->string('image_url');
             $table->timestamps();
+
+            $table->foreign('pharmacist_id')->references('id')->on('pharmacists')->onDelete('cascade');
+
         });
+
     }
 
     /**

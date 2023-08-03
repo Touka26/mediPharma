@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->id();
            // $table->integer('medicine_id')->unique();
-            $table->integer('manufacture_id')->unsigned();
+            $table->unsignedBigInteger('manufacture_id');
             $table->string('barcode');
             $table->string('trade_name');
             $table->string('combination');
@@ -34,6 +34,8 @@ return new class extends Migration
             $table->date('production_date');
             $table->date('expiration_date');
             $table->timestamps();
+
+          //  $table->foreign('manufacture_id')->references('id')->on('manufactures')->onDelete('cascade');
         });
     }
 

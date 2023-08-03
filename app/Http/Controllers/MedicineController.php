@@ -10,11 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class MedicineController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
 
     //Display all companies
     public function index()
@@ -27,34 +22,8 @@ class MedicineController extends Controller
         ], 200);
     }
 
-    //search by barcode
-    public function searchByBarcode($barcode)
-    {
-        $medicine = DB::table('medicines')->where('barcode', '=', $barcode)->first();
-        if ($medicine == null) {
-            return response()->json(['message' => 'The medicine is not exist'], 404);
-        } else
+//-----------------------------------------------------------------------------------------------------
 
-            return response()->json(['message' => 'The Medicine ', $medicine], 200);
-    }
-
-
-    //search by trade name
-    public function searchByTradeName($trade)
-    {
-        $medicine = DB::table('medicines')->where('trade_name', '=', $trade)->first();
-        if ($medicine == null) {
-            return response()->json(['message' => 'The medicine is not exist'], 404);
-        } else
-
-            return response()->json(['message' => 'The Medicine ', $medicine], 200);
-    }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
     //add medicine
     public function store(Request $request)
     {
@@ -108,12 +77,8 @@ class MedicineController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
+//-----------------------------------------------------------------------------------------------------
+
     //display by company medicine
     public function show($id)
     {
@@ -124,20 +89,28 @@ class MedicineController extends Controller
         }
         $medicine = DB::table('medicines')
             ->where('manufacture_id', '=', $id)
-            ->select('trade_name', 'amount', 'image_url')
+            ->select('trade_name', 'amount', 'image_url','statement','common_price')
             ->get();
         return response()->json(['message' => 'The medicine for this manufacture',
             $medicine], 200);
     }
 
+//-----------------------------------------------------------------------------------------------------
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
-     */
+    //display medicine by id
+    public function showMedicine($id)
+    {
+        $medicine = Medicine::query()->where('id', '=', $id)->first();
+
+        if (!$medicine) {
+            return response()->json(['message' => 'Invalid ID'], 404);
+        }
+
+        return response()->json(['message' => 'The medicine', 'medicine' => $medicine], 200);
+    }
+
+//-----------------------------------------------------------------------------------------------------
+
     //update medicine
     public function update(Request $request, $id)
     {
@@ -162,5 +135,9 @@ class MedicineController extends Controller
             'medicine' => $medicine
         ]);
     }
+
+//-----------------------------------------------------------------------------------------------------
+
+
 
 }

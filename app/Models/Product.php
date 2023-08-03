@@ -27,15 +27,9 @@ class Product extends Model
 
     use HasFactory;
 
-    public function purshasesBillsProducts()
+    public function purchasesDetails()
     {
-        return $this->hasMany(Purchases_Bill_Product::class, 'product_id');
-
-    }
-
-    public function salesBillsProducts()
-    {
-        return $this->hasMany(Sales_Bill_Product::class);
+        return $this->hasMany(Purchases_Detail::class);
 
     }
 
@@ -43,6 +37,16 @@ class Product extends Model
     {
         return $this->hasMany(Pharmacist_Product::class);
 
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+
+    }
+
+    public function store(){
+        return $this->hasMany(Store::class);
     }
 
     protected $casts = [

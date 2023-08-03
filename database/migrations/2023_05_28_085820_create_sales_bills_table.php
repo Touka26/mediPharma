@@ -13,21 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sales_bills', function (Blueprint $table) {
+        Schema::create('sales__bills', function (Blueprint $table) {
             $table->id();
          //   $table->integer('sales_bill_id')->unique();
-            $table->integer('pharmacist_id')->unsigned();
-            $table->date('today\'s date');
-            $table->string('material_name');
-            $table->integer('quantity_sold');
-            $table->double('unit_price');
-            $table->double('total_price');
-            $table->boolean('sale_confirmation');
-            $table->string('image_url');
-
-
-
+            $table->unsignedBigInteger('pharmacist_id');
+            $table->date('today_date');
             $table->timestamps();
+
+            $table->foreign('pharmacist_id')->references('id')->on('pharmacists')->onDelete('cascade');
+
         });
     }
 

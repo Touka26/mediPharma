@@ -12,32 +12,19 @@ class Purchases_Bill extends Model
     protected $fillable = [
         //  'purchases_bill_id',
         'pharmacist_id',
-        'today\'s date',
-        'material_name',
-        'all_amount',
-        'unit_price',
-        'total_price',
+        'today_date',
         'storehouse_name',
-        'Statement',
+        'statement',
         'image_url',
     ];
 
-    public function purchasesBillsMedicines()
+    public function details()
     {
-        return $this->hasMany(Purchases_Bill_Medicine::class);
-
-    }
-
-    public function purchasesBillsProducts()
-    {
-        return $this->hasMany(Purchases_Bill_Product::class);
-
+        return $this->hasMany(Purchases_Detail::class, 'purchases__bill_id');
     }
 
     protected $casts = [
         'pharmacist_id' => 'integer',
-        'all_amount' => 'integer',
-        'unit_price' => 'double',
-        'total_price' => 'double',
+
     ];
 }
