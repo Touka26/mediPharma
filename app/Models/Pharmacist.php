@@ -31,7 +31,8 @@ class Pharmacist extends Model
         'password',
         'password_confirmation',
         'image_url',
-        'financial_fund'
+        'financial_fund',
+        'active'
     ];
 
     public function pharmacistsMedicines(){
@@ -63,6 +64,7 @@ class Pharmacist extends Model
         'landline_phone_number' => 'integer',
         'mobile_number' => 'integer',
         'financial_fund' => 'double',
+        'active' => 'boolean'
         /*'registration_date'=>'date',
         'released_on_date'=>'date',*/
     ];

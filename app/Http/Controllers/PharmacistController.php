@@ -69,6 +69,7 @@ class PharmacistController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password', 'string', 'min:8'],
             'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'financial_fund' => 'required|numeric',
+//            'active'
         ]);
 
         if ($request->hasFile('copy_of_the_syndicate_card_url')) {
