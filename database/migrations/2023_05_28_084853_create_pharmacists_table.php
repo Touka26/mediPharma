@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('password_confirmation');
             $table->string('image_url');
             $table->double('financial_fund');
-           // $table->boolean('status')->nullable();
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

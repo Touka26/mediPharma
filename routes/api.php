@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\MedicineController;
@@ -93,6 +94,11 @@ Route::prefix('sales')->group(function () {
     Route::get('/diagram', [SalesController::class, 'diagram']);
     Route::get('/searchByDate/{date}', [SalesController::class, 'searchByDate']);
     Route::delete('/destroy/{id}', [SalesController::class, 'destroy']);
+});
+
+Route::prefix('admin')->group(function () {
+    Route::post('/login', [AdminController::class, 'login']);
+    Route::get('/getPharmacist', [AdminController::class, 'getPharmacist']);
 
 });
 
