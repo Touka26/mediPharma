@@ -14,7 +14,7 @@ class Pharmacist extends Model
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-       // 'pharmacist_id',
+        // 'pharmacist_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -32,31 +32,43 @@ class Pharmacist extends Model
         'password_confirmation',
         'image_url',
         'financial_fund',
-        'active'
+        'active',
+        'FCM_token'
     ];
 
-    public function pharmacistsMedicines(){
-        return $this->hasMany(Pharmacist_Medicine::class );
+    public function pharmacistsMedicines()
+    {
+        return $this->hasMany(Pharmacist_Medicine::class);
     }
 
-    public function pharmacistsProducts(){
-        return $this->hasMany(Pharmacist_Product::class );
+    public function pharmacistsProducts()
+    {
+        return $this->hasMany(Pharmacist_Product::class);
     }
 
-    public function orderProcessing(){
+    public function orderProcessing()
+    {
         return $this->belongsTo(Orders_Processing::class);
     }
 
-    public function employees(){
+    public function employees()
+    {
         return $this->hasMany(Employee::class);
     }
 
-    public function purchases_Bills(){
+    public function purchases_Bills()
+    {
         return $this->hasMany(Purchases_Bill::class);
     }
 
-    public function sales_Bills(){
+    public function sales_Bills()
+    {
         return $this->hasMany(Sales_Bill::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 
     protected $casts = [

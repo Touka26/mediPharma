@@ -16,7 +16,10 @@ return new class extends Migration {
             $table->id();
            // $table->integer('notification_id')->unique();
             $table->integer('admin_id')->unsigned();
+            $table->integer('pharmacist_id')->unsigned();
             $table->string('title');
+            $table->string('body');
+            $table->string('image_url');
 
             $table->timestamps();
         });

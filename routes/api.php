@@ -38,6 +38,7 @@ Route::prefix('pharmacist')->group(function () {
     Route::get('/searchByName/{name}', [PharmacistController::class, 'searchByName']);
     Route::get('/searchByBarcode/{barcode}', [PharmacistController::class, 'searchByBarcode']);
     Route::get('/getBox/{id}', [PharmacistController::class, 'getBox']);
+    Route::get('/showNotification/{id}', [PharmacistController::class, 'showNotification']);
 
 
 });
@@ -98,6 +99,9 @@ Route::prefix('sales')->group(function () {
 
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminController::class, 'login']);
+    Route::post('/updateFCMToken/{id}', [AdminController::class, 'updateFCMToken']);
+    Route::post('/sendAcceptNoti/{id}', [AdminController::class, 'sendAcceptNoti']);
+    Route::post('/sendRejectNoti/{id}', [AdminController::class, 'sendRejectNoti']);
     Route::get('/getPharmacist', [AdminController::class, 'getPharmacist']);
 
 });

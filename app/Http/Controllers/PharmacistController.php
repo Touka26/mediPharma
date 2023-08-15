@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
 use App\Models\Pharmacist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -69,7 +70,7 @@ class PharmacistController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password', 'string', 'min:8'],
             'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'financial_fund' => 'required|numeric',
-//            'active'
+
         ]);
 
         if ($request->hasFile('copy_of_the_syndicate_card_url')) {
@@ -106,6 +107,7 @@ class PharmacistController extends Controller
             'password_confirmation' => bcrypt(request('password_confirmation')),
             'image_url' => $url,
             'financial_fund' => $request->financial_fund,
+
         ]);
 
         $authToken = $pharmacist->createToken('auth-token')->plainTextToken;
@@ -304,5 +306,19 @@ class PharmacistController extends Controller
     }
 
 //-------------------------------------------------------------------------------------------------
+
+    //display all notification
+    public function showNotification($id)
+    {
+        $pharmacist = Notification::query()->where('pharmacist_id', '=', $id)->first();
+        if ($pharmacist == null) {
+            return response([
+                'message' => 'Invalid ID'
+            ], 422);
+        }
+        $notification = Notification::query()->select('title', 'body', 'image_url')->get();
+        return response()->json(['message' => $notification]);
+
+    }
 
 }
