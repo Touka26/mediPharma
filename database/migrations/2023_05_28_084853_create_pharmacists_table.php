@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('image_url');
             $table->double('financial_fund');
             $table->boolean('active')->default(false);
+            $table->text('FCM_token')->nullable();
             $table->timestamps();
         });
     }

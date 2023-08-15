@@ -6,12 +6,12 @@ use App\Models\Admin;
 use App\Models\Pharmacist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class AdminController extends Controller
 {
-
 
     // Log in for Admin
     public function login(Request $request)
@@ -67,5 +67,123 @@ class AdminController extends Controller
             $pharmacists
         ]);
     }
+
+//----------------------------------------------------------------------------------------------------
+
+    //update FCM token
+    public function updateFCMToken(Request $request, $id)
+    {
+        $pharmacist = Pharmacist::query()->find($id);
+
+        if (!$pharmacist) {
+            return response([
+                'message' => 'Invalid ID'
+            ], 422);
+        }
+
+        $request->validate([
+            'FCM_token' => 'required'
+        ]);
+
+        $pharmacist->update([
+            'FCM_token' => $request->FCM_token,
+        ]);
+
+        return response()->json([
+            'message' => 'FCM token updated successfully'
+        ]);
+    }
+
+
+//----------------------------------------------------------------------------------------------------
+
+    //send Accept notification
+    public function sendAcceptNoti($id)
+    {
+        // Get the pharmacist
+        $pharmacist = Pharmacist::query()->find($id);
+
+        if (!$pharmacist) {
+            return response()->json([
+                'message' => 'Pharmacist not found'
+            ], 404);
+        }
+
+        // Update the 'active' field of the pharmacist
+        $pharmacist->update(['active' => 1]);
+
+        // Set the values for admin and pharmacist IDs
+        $adminId = 1; // Replace with the actual admin ID
+        $pharmacistId = $pharmacist->id;
+
+        // Store notification for the pharmacist
+        $notification = $pharmacist->notifications()->create([
+            'admin_id' => $adminId,
+            'pharmacist_id' => $pharmacistId,
+            'title' => 'Authentication Message',
+            'body' => 'Your order is accepted,
+            your information is correct.
+             Welcome to MediPharma!',
+            'image_url' => 'http://127.0.0.1:8000/storage/files/images/logo.png'
+        ]);
+
+        // Get FCM token and server key
+        $fcmToken = $pharmacist->FCM_token;
+        $serverKey = env('FCM_SERVER_KEY');
+
+        // Send FCM notification
+        $response = Http::acceptJson()->withToken($serverKey)->post('https://fcm.googleapis.com/fcm/send', [
+            'to' => $fcmToken,
+            'notification' => [
+                'title' => $notification->title,
+                'body' => $notification->body,
+                'image' => $notification->image_url,
+                'sound' => 'default'
+            ]
+        ]);
+        return json_decode($response);
+    }
+
+//----------------------------------------------------------------------------------------------------
+
+    //send reject notification
+    public function sendRejectNoti($id)
+    {
+        // Get the pharmacist
+        $pharmacist = Pharmacist::query()->find($id);
+
+        if (!$pharmacist) {
+            return response()->json([
+                'message' => 'Pharmacist not found'
+            ], 404);
+        }
+
+        // Get FCM token and server key
+        $fcmToken = $pharmacist->FCM_token;
+        $serverKey = env('FCM_SERVER_KEY');
+
+        // Send FCM notification
+        $response = Http::acceptJson()->withToken($serverKey)->post('https://fcm.googleapis.com/fcm/send', [
+            'to' => $fcmToken,
+            'notification' => [
+                'title' => 'Authentication Message',
+                'body' => 'Your order is rejected, because your information isn\'t correct.
+                           Please verify your information.',
+                'image' => 'http://127.0.0.1:8000/storage/files/images/logo.png',
+                'sound' => 'default'
+            ]
+        ]);
+
+        // Delete the pharmacist
+        $pharmacist->delete();
+
+        return json_decode($response);
+    }
+
+//----------------------------------------------------------------------------------------------------
+
+
+
+
 }
 

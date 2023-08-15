@@ -13,11 +13,15 @@ class Notification extends Model
 
         /*'notification_id',*/
         'admin_id',
+        'pharmacist_id',
         'title',
+        'body',
+        'image_url'
 
     ];
 
     protected $casts = [
         'admin_id'=>'integer',
+        'pharmacist_id'=>'integer',
     ];
 }
