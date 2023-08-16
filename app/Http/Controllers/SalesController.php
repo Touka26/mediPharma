@@ -23,12 +23,27 @@ class SalesController extends Controller
             'pharmacist_id' => 'required|exists:pharmacists,id',
         ]);
 
+        // Check if a sales record already exists for the pharmacist and today's date
+        $existingSales = Sales_Bill::query()
+            ->where('pharmacist_id', $request->pharmacist_id)
+            ->whereDate('today_date', Carbon::today())
+            ->first();
+
+        if ($existingSales) {
+            return response()->json([
+                'message' => 'A sales record already exists for this pharmacist today'
+            ], 422);
+        }
+
+        // Create the sales record
         $sales = Sales_Bill::query()->create([
             'pharmacist_id' => $request->pharmacist_id,
-            'today_date' => $request->today_date = Carbon::today()->format('Y-m-d')
+            'today_date' => Carbon::today()->format('Y-m-d')
         ]);
-        return response()->json(['message' => 'added', $sales], 200);
+
+        return response()->json(['message' => 'Sales record added', 'sales' => $sales], 200);
     }
+
 
 //--------------------------------------------------------------------------------------
 
@@ -133,11 +148,7 @@ class SalesController extends Controller
     //check medicine if forbidden or not
     public function checkMedicine(Request $request, $id)
     {
-        $forbidden = Store::query()
-            ->join('medicines', 'stores.medicine_id', '=', 'medicines.id')
-            ->where('stores.medicine_id', '=', $id)
-            ->select('medicines.statement')
-            ->first();
+        $forbidden = Medicine::query()->where('id','=',$id)->first();
 
         if ($forbidden && $forbidden->statement == 1) {
             $request->validate([
