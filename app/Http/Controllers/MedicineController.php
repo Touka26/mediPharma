@@ -15,7 +15,7 @@ class MedicineController extends Controller
     public function index()
     {
         $manufacture = DB::table('manufactures')
-            ->select('company_name')
+            ->select('id','company_name')
             ->orderBy('company_name')->get();
         return response()->json([
             'The manufacture' => $manufacture
