@@ -121,10 +121,8 @@ class AdminController extends Controller
             'admin_id' => $adminId,
             'pharmacist_id' => $pharmacistId,
             'title' => 'Authentication Message',
-            'body' => 'Your order is accepted,
-            your information is correct.
-             Welcome to MediPharma!',
-            'image_url' => 'http://127.0.0.1:8000/storage/files/images/logo.png'
+            'body' => 'Your order is accepted, your information is correct. Welcome to MediPharma!',
+            'image_url' => '/storage/files/images/logo.png'
         ]);
 
         // Get FCM token and server key
@@ -137,10 +135,13 @@ class AdminController extends Controller
             'notification' => [
                 'title' => $notification->title,
                 'body' => $notification->body,
-                'image' => $notification->image_url,
                 'sound' => 'default'
+            ],
+            'data' => [
+                'image' => $notification->image_url,
             ]
         ]);
+
         return json_decode($response);
     }
 

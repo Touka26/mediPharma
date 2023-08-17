@@ -41,6 +41,9 @@ class Medicine extends Model
     public function store(){
         return $this->hasMany(Store::class);
     }
+    public function forbidden(){
+        return $this->hasMany(Forbidden::class);
+    }
 
     protected $casts = [
         'manufacture_id' => 'integer',

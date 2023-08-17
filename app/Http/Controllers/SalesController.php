@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Forbidden;
 use App\Models\Medicine;
 use App\Models\Pharmacist;
 use App\Models\Product;
@@ -162,9 +163,25 @@ class SalesController extends Controller
                 $image = Storage::url($path);
             }
 
-            $medicine = Medicine::query()->where('id', $id)->update([
+            // Get the medicine before updating
+            $medicine = Medicine::query()->find($id);
+
+            $medicine->update([
                 'prescription_url' => $image,
                 'id_number' => $request->id_number,
+            ]);
+
+            // Create a new Forbidden entry
+            Forbidden::create([
+                'medicine_id' => $medicine->id,
+                'prescription_url' => $medicine->prescription_url,
+                'id_number' => $medicine->id_number,
+            ]);
+
+            // Nullify prescription_url and id_number in the medicine table
+            $medicine->update([
+                'prescription_url' => null,
+                'id_number' => null,
             ]);
 
             return response()->json([
