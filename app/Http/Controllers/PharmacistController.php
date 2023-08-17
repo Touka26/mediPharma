@@ -316,7 +316,7 @@ class PharmacistController extends Controller
                 'message' => 'Invalid ID'
             ], 422);
         }
-        $notification = Notification::query()->select('title', 'body', 'image_url')->get();
+        $notification = Notification::query()->where('pharmacist_id', '=', $id)->select('pharmacist_id','title', 'body', 'image_url')->get();
         return response()->json(['message' => $notification]);
 
     }
