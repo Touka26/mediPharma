@@ -89,7 +89,7 @@ class MedicineController extends Controller
         }
         $medicine = DB::table('medicines')
             ->where('manufacture_id', '=', $id)
-            ->select('trade_name', 'amount', 'image_url','statement','common_price')
+            ->select('id','trade_name', 'amount', 'image_url','statement','common_price')
             ->get();
         return response()->json(['message' => 'The medicine for this manufacture',
             $medicine], 200);

@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->string('combination')->nullable();
             $table->string('caliber')->nullable();
             $table->integer('amount');
-            $table->double('piece\'s_price');
+            $table->double('piece_price');
             $table->double('common_price');
             $table->string('image_url');
             $table->date('production_date');

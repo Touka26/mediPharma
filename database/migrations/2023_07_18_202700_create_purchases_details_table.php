@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->double('total_price');
             $table->timestamps();
 
-            $table->foreign('purchases__bill_id')->references('id')->on('purchases__bills')->onDelete('cascade');
+            $table->foreign('purchases__bill_id')->references('id')->on('purchases__bills');
             $table->foreign('medicine_id')->references('id')->on('medicines');
             $table->foreign('product_id')->references('id')->on('products');
 

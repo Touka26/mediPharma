@@ -45,29 +45,11 @@ class PurchasesController extends Controller
             })
             ->leftJoin('medicines', 'purchases__details.medicine_id', '=', 'medicines.id')
             ->leftJoin('products', 'purchases__details.product_id', '=', 'products.id')
-            ->select( 'medicines.trade_name', DB::raw('COALESCE(medicines.image_url, "") as medicine_image_url'),
+            ->select('medicines.trade_name', DB::raw('COALESCE(medicines.image_url, "") as medicine_image_url'),
                 'products.name as product_name', DB::raw('COALESCE(products.image_url, "") as product_image_url'),
                 'purchases__details.amount', 'purchases__details.unit_price', 'purchases__details.total_price',
-               )
+            )
             ->get();
-
-//        // Filter out entries where both product_name and product_image_url are null
-//        $filteredDetails = $details->filter(function ($detail) {
-//            return (
-//                (!is_null($detail->product_name) && trim($detail->product_name) !== 'null') ||
-//                (!is_null($detail->product_image_url) && trim($detail->product_image_url) !== '') ||
-//                (!is_null($detail->trade_name) && trim($detail->trade_name) !== 'null') ||
-//                (!is_null($detail->medicine_image_url) && trim($detail->medicine_image_url) !== '')
-//            );
-//        });
-
-//        if ($filteredDetails->isEmpty()) {
-//            return response()->json(['message' => 'No valid medicine or product found for this purchases bill'], 404);
-//        }
-
-//        $total_price = DB::table('purchases__details')
-//            ->where('purchases__bill_id', $id)
-//            ->sum('total_price');
 
         return response()->json([
             'The medicine or product for this purchases bill' => $details,
@@ -123,16 +105,28 @@ class PurchasesController extends Controller
 
 //--------------------------------------------------------------------------------------------------------
 
-    //add details of purchases bill
-    public function details(Request $request, $barcode)
+    //check medicine or product is exist or not
+    public function checkBarcode($barcode)
     {
         $medicine = Medicine::where('barcode', $barcode)->first();
         $product = Product::where('barcode', $barcode)->first();
 
-        if (!$medicine && !$product) {
-            return response()->json(['message' => 'The medicine or product does not exist, please add it.'], 404);
+        if ($medicine) {
+            $response = Medicine::query()->select('id', 'trade_name as medicine', 'image_url')->get();
+            return response()->json(['message' => 'This medicine is exist', 'data' => $response], 200);
+        } elseif ($product) {
+            $response = Product::query()->select('id', 'name as product', 'image_url')->get();
+            return response()->json(['message' => 'This product is exist', 'data' => $response], 200);
+        } else {
+            return response()->json(['message' => 'The medicine or product does not exist, please add!'], 404);
         }
+    }
 
+//--------------------------------------------------------------------------------------------------------
+
+    //add details of purchases bill
+    public function details(Request $request)
+    {
         $request->validate([
             'purchases__bill_id' => 'required',
             'amount' => 'required',
@@ -145,56 +139,43 @@ class PurchasesController extends Controller
 
         $details = Purchases_Detail::create([
             'purchases__bill_id' => $request->purchases__bill_id,
-            'medicine_id' => $medicine ? $medicine->id : null,
-            'product_id' => $product ? $product->id : null,
+            'medicine_id' => $request->medicine_id,
+            'product_id' => $request->product_id,
             'amount' => $all_amount,
             'unit_price' => $unit_price,
             'total_price' => $total_price,
         ]);
 
-        if ($medicine || $product) {
-            if ($medicine) {
-                $medicine->amount += $details->amount;
-                $medicine->save();
-            }
+        $medicine = Medicine::find($request->medicine_id);
+        $product = Product::find($request->product_id);
 
-            if ($product) {
-                $product->amount += $details->amount;
-                $product->save();
-            }
-
-            // Update pharmacist's financial fund
-            $purchase = Purchases_Bill::where('id', $request->purchases__bill_id)
-                ->select('pharmacist_id')->first();
-
-            if ($purchase) {
-                $pharmacistId = $purchase->pharmacist_id;
-                $pharmacist = Pharmacist::find($pharmacistId);
-                if ($pharmacist) {
-                    $pharmacist->financial_fund -= $total_price;
-                    $pharmacist->save();
-                }
-            }
-        } else {
-            return response()->json(['message' => 'The medicine or product does not exist'], 404);
-        }
-
-        // Build selected details for response
-        $selectedDetails = [];
         if ($medicine) {
-            $selectedDetails['medicine_trade_name'] = $medicine->trade_name;
-            $selectedDetails['medicine_image_url'] = $medicine->image_url;
-        }
-        if ($product) {
-            $selectedDetails['product_name'] = $product->name;
-            $selectedDetails['product_image_url'] = $product->image_url;
+            $medicine->amount += $all_amount;
+            $medicine->net_price = $unit_price;
+            $medicine->common_price = $medicine->net_price + ($medicine->net_price * 0.2);
+            $medicine->save();
         }
 
-        return response()->json([
-            'message' => 'Purchase details added successfully',
-            'details' => $selectedDetails,
-            'purchases_detail' => $details
-        ], 200);
+        if ($product) {
+            $product->amount += $all_amount;
+            $product->piece_price = $unit_price;
+            $product->common_price = $product->piece_price + ($product->piece_price * 0.25);
+            $product->save();
+        }
+
+        // Update pharmacist's financial fund
+        $purchase = Purchases_Bill::where('id', $request->purchases__bill_id)
+            ->select('pharmacist_id')->first();
+
+        if ($purchase) {
+            $pharmacistId = $purchase->pharmacist_id;
+            $pharmacist = Pharmacist::find($pharmacistId);
+            if ($pharmacist) {
+                $pharmacist->financial_fund -= $total_price;
+                $pharmacist->save();
+            }
+        }
+        return response()->json(['message' => 'The Purchases details ', 'details' => $details], 200);
     }
 
 //--------------------------------------------------------------------------------------------------------
