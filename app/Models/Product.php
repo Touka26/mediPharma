@@ -17,7 +17,7 @@ class Product extends Model
         'combination',
         'caliber',
         'amount',
-        'piece\'s_price',
+        'piece_price',
         'common_price',
         'image_url',
         'production_date',
@@ -53,7 +53,7 @@ class Product extends Model
         'category_id' => 'integer',
         'amount' => 'integer',
         'common_price' => 'double',
-        'piece\'s_price' => 'double',
+        'piece_price' => 'double',
     ];
 
 }

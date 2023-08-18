@@ -76,8 +76,9 @@ Route::prefix('product')->group(function () {
 
 Route::prefix('purchases')->group(function () {
     Route::post('/add', [PurchasesController::class, 'storePurchases']);
-    Route::post('/details/{barcode}', [PurchasesController::class, 'details']);
+    Route::post('/details', [PurchasesController::class, 'details']);
     Route::get('/index', [PurchasesController::class, 'index']);
+    Route::get('/checkBarcode/{barcode}', [PurchasesController::class, 'checkBarcode']);
     Route::get('/detailsPurchases/{id}', [PurchasesController::class, 'detailsPurchases']);
     Route::get('/searchByDate/{date}', [PurchasesController::class, 'searchByDate']);
 
@@ -103,6 +104,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/sendAcceptNoti/{id}', [AdminController::class, 'sendAcceptNoti']);
     Route::post('/sendRejectNoti/{id}', [AdminController::class, 'sendRejectNoti']);
     Route::get('/getPharmacist', [AdminController::class, 'getPharmacist']);
+    Route::get('/pharmacistByID/{id}', [AdminController::class, 'pharmacistByID']);
 
 });
 

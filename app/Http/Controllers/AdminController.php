@@ -70,6 +70,27 @@ class AdminController extends Controller
 
 //----------------------------------------------------------------------------------------------------
 
+    //display pharmacist by id
+    public function pharmacistByID($id)
+    {
+        $pharmacist = Pharmacist::query()->where('id', $id)->first();
+        if ($pharmacist == null) {
+
+            return response()->json([
+                'message' => 'Pharmacist not found'
+            ], 404);
+
+        }
+        $pharmacist=Pharmacist::query()->where('id', '=' ,$id)->select('id', 'first_name', 'middle_name', 'last_name',
+            'registration_number', 'registration_date', 'released_on_date',
+            'city', 'region', 'name_of_pharmacy', 'landline_phone_number', 'mobile_number',
+            'copy_of_the_syndicate_card_url', 'image_url', 'active')->get();
+        return response()->json(['message' => 'pharmacist by ID', $pharmacist],200);
+    }
+
+
+//----------------------------------------------------------------------------------------------------
+
     //update FCM token
     public function updateFCMToken(Request $request, $id)
     {
@@ -182,8 +203,6 @@ class AdminController extends Controller
     }
 
 //----------------------------------------------------------------------------------------------------
-
-
 
 
 }

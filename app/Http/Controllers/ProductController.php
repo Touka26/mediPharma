@@ -21,7 +21,7 @@ class ProductController extends Controller
             'combination',
             'caliber',
             'amount' => 'required|integer',
-            'piece\'s_price' => 'required',
+            'piece_price' => 'required',
             'image_url' => 'required|file',
             'production_date' => 'required',
             'expiration_date' => 'required',
@@ -33,7 +33,7 @@ class ProductController extends Controller
             $path = $request->file('image_url')->storeAs($destination_path, $file_name);
             $image = Storage::url($path);
         }
-        $piecePrice = $request->input('piece\'s_price');
+        $piecePrice = $request->input('piece_price');
         $commonPrice = $piecePrice + ($piecePrice * 0.25);
         $product = Product::query()->create([
             'category_id' => $request->category_id,
@@ -43,7 +43,7 @@ class ProductController extends Controller
             'combination' => $request->combination,
             'caliber' => $request->caliber,
             'amount' => $request->amount,
-            'piece\'s_price' => $piecePrice,
+            'piece_price' => $piecePrice,
             'common_price' => $commonPrice,
             'image_url' => $image,
             'production_date' => $request->production_date,
@@ -67,7 +67,7 @@ class ProductController extends Controller
         }
         $product = DB::table('products')
             ->where('category_id', '=', $id)
-            ->select('name', 'amount', 'image_url','common_price')
+            ->select('id','name', 'amount', 'image_url','common_price')
             ->get();
         return response()->json(['message' => 'The product for this section',
             $product], 200);
@@ -101,7 +101,7 @@ class ProductController extends Controller
         $piecePrice = $request->input('piece\'s_price');
         $commonPrice = $piecePrice + ($piecePrice * 0.2);
         if ($piecePrice) {
-            $product->{'piece\'s_price'} = $piecePrice;
+            $product->{'piece_price'} = $piecePrice;
         }
         if ($commonPrice) {
             $product->common_price = $commonPrice;

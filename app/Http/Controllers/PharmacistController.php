@@ -70,6 +70,7 @@ class PharmacistController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password', 'string', 'min:8'],
             'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'financial_fund' => 'required|numeric',
+//            'active'=>'required'
 
         ]);
 
@@ -107,6 +108,7 @@ class PharmacistController extends Controller
             'password_confirmation' => bcrypt(request('password_confirmation')),
             'image_url' => $url,
             'financial_fund' => $request->financial_fund,
+            'active'=>$request->active,
 
         ]);
 
@@ -265,11 +267,11 @@ class PharmacistController extends Controller
         $results = [];
 
         if (!$medicines->isEmpty()) {
-            $results['medicines'] = $medicines;
+            $results['search'] = $medicines;
         }
 
         if (!$products->isEmpty()) {
-            $results['products'] = $products;
+            $results['search'] = $products;
         }
 
         if (!empty($results)) {
@@ -291,11 +293,11 @@ class PharmacistController extends Controller
         $response = [];
 
         if (!$medicines->isEmpty()) {
-            $response['medicines'] = $medicines;
+            $response['search'] = $medicines;
         }
 
         if (!$products->isEmpty()) {
-            $response['products'] = $products;
+            $response['search'] = $products;
         }
 
         if (!empty($response)) {
