@@ -63,8 +63,7 @@ class AdminController extends Controller
         });
 
         return response()->json([
-            'pharmacists',
-            $pharmacists
+            'pharmacists'=>$pharmacists
         ]);
     }
 
