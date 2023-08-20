@@ -31,12 +31,6 @@ class PurchasesController extends Controller
     //display details of specific purchases bill
     public function detailsPurchases($id)
     {
-        $details = Purchases_Bill::query()->find($id);
-        if ($details == null) {
-            return response([
-                'message' => 'Invalid ID'
-            ], 422);
-        }
         $details = DB::table('purchases__details')
             ->where('purchases__bill_id', $id)
             ->where(function ($query) {
@@ -45,18 +39,20 @@ class PurchasesController extends Controller
             })
             ->leftJoin('medicines', 'purchases__details.medicine_id', '=', 'medicines.id')
             ->leftJoin('products', 'purchases__details.product_id', '=', 'products.id')
-            ->select('medicines.trade_name', DB::raw('COALESCE(medicines.image_url, "") as medicine_image_url'),
-                'products.name as product_name', DB::raw('COALESCE(products.image_url, "") as product_image_url'),
-                'purchases__details.amount', 'purchases__details.unit_price', 'purchases__details.total_price',
+            ->select(
+                'medicines.trade_name',
+                DB::raw('nullif(medicines.image_url, "") as medicine_image_url'),
+                'products.name as product_name',
+                DB::raw('nullif(products.image_url, "") as product_image_url'),
+                'purchases__details.amount',
+                'purchases__details.unit_price',
+                'purchases__details.total_price'
             )
             ->get();
-
         return response()->json([
             'The medicine or product for this purchases bill' => $details,
-//            'total_price' => $total_price
         ], 200);
     }
-
 //--------------------------------------------------------------------------------------------------------
 
     //Search by purchases date
@@ -110,18 +106,39 @@ class PurchasesController extends Controller
     {
         $medicine = Medicine::where('barcode', $barcode)->first();
         $product = Product::where('barcode', $barcode)->first();
-
+        $response = [];
         if ($medicine) {
-            $response = Medicine::query()->select('id', 'trade_name as medicine', 'image_url')->get();
-            return response()->json(['message' => 'This medicine is exist', 'data' => $response], 200);
+            $response = Medicine::query()
+                ->select('id', 'trade_name as product', 'image_url')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'medicine_id' => $item->id,
+                        'product_id' => null,
+                        'name' => $item->product,
+                        'image_url' => $item->image_url,
+
+                    ];
+                });
         } elseif ($product) {
-            $response = Product::query()->select('id', 'name as product', 'image_url')->get();
-            return response()->json(['message' => 'This product is exist', 'data' => $response], 200);
+            $response = Product::query()
+                ->select('id', 'name as product', 'image_url')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'medicine_id' => null,
+                        'product_id' => $item->id,
+                        'name' => $item->product,
+                        'image_url' => $item->image_url,
+                    ];
+                });
+        }
+        if (!empty($response)) {
+            return response()->json(['message' => 'This product/medicine is exist', 'data' => $response], 200);
         } else {
-            return response()->json(['message' => 'The medicine or product does not exist, please add!'], 404);
+            return response()->json(['message' => 'The medicine or product does not exist, please add!', 'data' => []], 404);
         }
     }
-
 //--------------------------------------------------------------------------------------------------------
 
     //add details of purchases bill
