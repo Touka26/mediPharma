@@ -53,17 +53,17 @@ class SalesController extends Controller
             'medicine_id' => 'exists:medicines,id',
             'product_id' => 'exists:products,id',
             'name' => 'required',
-            'image_url' => 'required|file',
+            'image_url' => 'required',
             'quantity_sold' => 'required',
         ]);
 
-        if ($request->hasFile('image_url')) {
+      /*  if ($request->hasFile('image_url')) {
             $destination_path = 'public/files/images';
             $image_url = $request->file('image_url');
             $file_name = $image_url->getClientOriginalName();
             $path = $request->file('image_url')->storeAs($destination_path, $file_name);
             $image = Storage::url($path);
-        }
+        }*/
 
         $quantity_sold = $request->input('quantity_sold');
         $unit_price = $request->input('unit_price');
@@ -95,7 +95,7 @@ class SalesController extends Controller
             'quantity_sold' => $quantity_sold,
             'unit_price' => $unit_price,
             'total_price' => $total_price,
-            'image_url' => $image,
+            'image_url' => $request->image_url,//$image,
         ]);
 
         // Update the sales__bill_id for all records created on the same day
