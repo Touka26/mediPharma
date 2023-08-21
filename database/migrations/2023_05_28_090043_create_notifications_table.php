@@ -19,8 +19,6 @@ return new class extends Migration {
             $table->integer('pharmacist_id')->unsigned();
             $table->string('title');
             $table->string('body');
-            $table->string('image_url');
-
             $table->timestamps();
         });
     }

@@ -39,6 +39,7 @@ Route::prefix('pharmacist')->group(function () {
     Route::get('/searchByBarcode/{barcode}', [PharmacistController::class, 'searchByBarcode']);
     Route::get('/getBox/{id}', [PharmacistController::class, 'getBox']);
     Route::get('/showNotification/{id}', [PharmacistController::class, 'showNotification']);
+    Route::get('/getActive/{id}', [PharmacistController::class, 'getActive']);
 
 
 });
