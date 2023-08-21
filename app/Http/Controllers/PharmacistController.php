@@ -108,7 +108,7 @@ class PharmacistController extends Controller
             'password_confirmation' => bcrypt(request('password_confirmation')),
             'image_url' => $url,
             'financial_fund' => $request->financial_fund,
-            'active'=>$request->active,
+            'active' => $request->active,
 
         ]);
 
@@ -318,8 +318,25 @@ class PharmacistController extends Controller
                 'message' => 'Invalid ID'
             ], 422);
         }
-        $notification = Notification::query()->where('pharmacist_id', '=', $id)->select('pharmacist_id','title', 'body', 'image_url')->get();
+        $notification = Notification::query()->where('pharmacist_id', '=', $id)->select('pharmacist_id', 'title', 'body', 'image_url')->get();
         return response()->json(['message' => $notification]);
+
+    }
+
+//-------------------------------------------------------------------------------------------------
+
+    //get active pharmacist
+    public function getActive($id)
+    {
+        $active = Pharmacist::query()->where('id', '=', $id)->first();
+        if ($active == null) {
+            return response()->json(['message' => 'invalid id'], 422);
+        }
+        $pharmacist = Pharmacist::query()
+            ->where('id', '=', $id)
+            ->select('active')->get();
+        return response()->json(['status of pharmacist' => $pharmacist], 200);
+
 
     }
 

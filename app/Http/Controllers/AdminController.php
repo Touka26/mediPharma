@@ -118,52 +118,51 @@ class AdminController extends Controller
 //----------------------------------------------------------------------------------------------------
 
     //send Accept notification
-    public function sendAcceptNoti($id)
-    {
-        // Get the pharmacist
-        $pharmacist = Pharmacist::query()->find($id);
 
-        if (!$pharmacist) {
-            return response()->json([
-                'message' => 'Pharmacist not found'
-            ], 404);
-        }
 
-        // Update the 'active' field of the pharmacist
-        $pharmacist->update(['active' => 1]);
+     public function sendAcceptNoti($id)
+     {
+         // Get the pharmacist
+         $pharmacist = Pharmacist::query()->find($id);
 
-        // Set the values for admin and pharmacist IDs
-        $adminId = 1; // Replace with the actual admin ID
-        $pharmacistId = $pharmacist->id;
+         if (!$pharmacist) {
+             return response()->json([
+                 'message' => 'Pharmacist not found'
+             ], 404);
+         }
 
-        // Store notification for the pharmacist
-        $notification = $pharmacist->notifications()->create([
-            'admin_id' => $adminId,
-            'pharmacist_id' => $pharmacistId,
-            'title' => 'Authentication Message',
-            'body' => 'Your order is accepted, your information is correct. Welcome to MediPharma!',
-            'image_url' => '/storage/files/images/logo.png'
-        ]);
+         // Update the 'active' field of the pharmacist
+         $pharmacist->update(['active' => 1]);
 
-        // Get FCM token and server key
-        $fcmToken = $pharmacist->FCM_token;
-        $serverKey = env('FCM_SERVER_KEY');
+         // Set the values for admin and pharmacist IDs
+         $adminId = 1;
+         $pharmacistId = $pharmacist->id;
 
-        // Send FCM notification
-        $response = Http::acceptJson()->withToken($serverKey)->post('https://fcm.googleapis.com/fcm/send', [
-            'to' => $fcmToken,
-            'notification' => [
-                'title' => $notification->title,
-                'body' => $notification->body,
-                'sound' => 'default'
-            ],
-            'data' => [
-                'image' => $notification->image_url,
-            ]
-        ]);
+         // Store notification for the pharmacist
+         $notification = $pharmacist->notifications()->create([
+             'admin_id' => $adminId,
+             'pharmacist_id' => $pharmacistId,
+             'title' => 'Authentication Message',
+             'body' => 'Your order is accepted, your information is correct. Welcome to MediPharma!',
+         ]);
 
-        return json_decode($response);
-    }
+         // Get FCM token and server key
+         $fcmToken = $pharmacist->FCM_token;
+         $serverKey = env('FCM_SERVER_KEY');
+
+         // Send FCM notification
+         $response = Http::acceptJson()->withToken($serverKey)->post('https://fcm.googleapis.com/fcm/send', [
+             'to' => $fcmToken,
+             'notification' => [
+                 'title' => $notification->title,
+                 'body' => $notification->body,
+                 'sound' => 'default'
+             ],
+         ]);
+
+         return json_decode($response);
+     }
+
 
 //----------------------------------------------------------------------------------------------------
 
@@ -190,7 +189,6 @@ class AdminController extends Controller
                 'title' => 'Authentication Message',
                 'body' => 'Your order is rejected, because your information isn\'t correct.
                            Please verify your information.',
-                'image' => 'http://127.0.0.1:8000/storage/files/images/logo.png',
                 'sound' => 'default'
             ]
         ]);
