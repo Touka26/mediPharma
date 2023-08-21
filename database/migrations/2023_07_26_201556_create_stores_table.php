@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('sales__bill_id');
+            $table->unsignedBigInteger('sales__bill_id')->nullable();
             $table->unsignedBigInteger('medicine_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->string('name');
-            $table->integer('quantity_sold');
-            $table->double('unit_price');
-            $table->double('total_price');
-            $table->string('image_url');
+            $table->string('name')->nullable();
+            $table->integer('quantity_sold')->nullable();
+            $table->double('unit_price')->nullable();
+            $table->double('total_price')->nullable();
+            $table->string('image_url')->nullable();
             $table->timestamps();
 
 
@@ -41,5 +41,6 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('stores');
+
     }
 };

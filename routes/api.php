@@ -62,6 +62,8 @@ Route::prefix('medicine')->group(function () {
     Route::get('/index', [MedicineController::class, 'index']);
     Route::get('/searchByBarcode/{barcode}', [MedicineController::class, 'searchByBarcode']);
     Route::get('/searchByTradeName/{trade}', [MedicineController::class, 'searchByTradeName']);
+    Route::get('/displayForbidden/', [MedicineController::class, 'displayForbidden']);
+
 
 });
 

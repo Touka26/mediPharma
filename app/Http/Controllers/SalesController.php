@@ -17,35 +17,6 @@ use Illuminate\Support\Facades\Storage;
 class SalesController extends Controller
 {
 
-    //add sales bill
-    public function storeSales(Request $request)
-    {
-        $request->validate([
-            'pharmacist_id' => 'required|exists:pharmacists,id',
-        ]);
-
-        // Check if a sales record already exists for the pharmacist and today's date
-        $existingSales = Sales_Bill::query()
-            ->where('pharmacist_id', $request->pharmacist_id)
-            ->whereDate('today_date', Carbon::today())
-            ->first();
-        if ($existingSales) {
-            return response()->json([
-                'message' => 'A sales record already exists for this pharmacist today'
-            ], 422);
-        }
-        // Create the sales record
-        $sales = Sales_Bill::query()->create([
-            'pharmacist_id' => $request->pharmacist_id,
-            'today_date' => Carbon::today()->format('Y-m-d')
-        ]);
-
-        return response()->json(['message' => 'Sales record added', 'sales' => $sales], 200);
-    }
-
-
-//--------------------------------------------------------------------------------------
-
     //display all sales bill by date and their ids
     public function showAllSales()
     {
@@ -79,14 +50,13 @@ class SalesController extends Controller
     public function storeBug(Request $request)
     {
         $request->validate([
-            'sales__bill_id' => 'required|exists:sales__bills,id',
             'medicine_id' => 'exists:medicines,id',
             'product_id' => 'exists:products,id',
-            'name' => 'required|max:50',
-            'quantity_sold' => 'required',
-            'unit_price' => 'required',
+            'name' => 'required',
             'image_url' => 'required|file',
+            'quantity_sold' => 'required',
         ]);
+
         if ($request->hasFile('image_url')) {
             $destination_path = 'public/files/images';
             $image_url = $request->file('image_url');
@@ -94,14 +64,31 @@ class SalesController extends Controller
             $path = $request->file('image_url')->storeAs($destination_path, $file_name);
             $image = Storage::url($path);
         }
+
         $quantity_sold = $request->input('quantity_sold');
         $unit_price = $request->input('unit_price');
         $medicine_id = $request->input('medicine_id');
         $product_id = $request->input('product_id');
         $total_price = $quantity_sold * $unit_price;
 
+        // Check if a sales record already exists for today's date
+        $sales = Sales_Bill::query()
+            ->whereDate('today_date', Carbon::today())
+            ->first();
+
+        if (!$sales) {
+            // Create a new sales record
+            $sales = Sales_Bill::query()->create([
+                'pharmacist_id' => $request->pharmacist_id,
+                'today_date' => Carbon::today()->format('Y-m-d')
+            ]);
+        }
+
+        // Get the ID of the sales record
+        $sales__bill_id = $sales->id;
+
         $storeBug = Store::query()->create([
-            'sales__bill_id' => $request->sales__bill_id,
+            'sales__bill_id' => $sales__bill_id,
             'medicine_id' => $medicine_id,
             'product_id' => $product_id,
             'name' => $request->name,
@@ -110,6 +97,13 @@ class SalesController extends Controller
             'total_price' => $total_price,
             'image_url' => $image,
         ]);
+
+        // Update the sales__bill_id for all records created on the same day
+        Store::query()
+            ->whereDate('created_at', Carbon::today())
+            ->update(['sales__bill_id' => $sales__bill_id]);
+
+
 
         if ($medicine_id && $product_id) {
             // Handle the case when both medicine and product are provided
@@ -170,6 +164,7 @@ class SalesController extends Controller
                 'prescription_url' => $image,
                 'id_number' => $request->id_number,
             ]);
+
 
             // Create a new Forbidden entry
             Forbidden::create([

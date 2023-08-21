@@ -178,12 +178,12 @@ class PharmacistController extends Controller
             $url = Storage::url($path);
             $pharmacist->image_url = $url;
         }
-        if ($request->has('financial_fund')) {
-            $old_fund = $pharmacist->financial_fund;
-            $new_fund = (float)$request->input('financial_fund');
-
-            $pharmacist->financial_fund = $old_fund + $new_fund;
-        }
+//        if ($request->has('financial_fund')) {
+//            $old_fund = $pharmacist->financial_fund;
+//            $new_fund = (float)$request->input('financial_fund');
+//
+//            $pharmacist->financial_fund = $old_fund + $new_fund;
+//        }
         if ($city) {
             $pharmacist->city = $city;
         }
