@@ -140,10 +140,10 @@ class AdminController extends Controller
         ]);
 
         // Send the notification
-        $response = $this->sendNotification($request->FCM_token, [
+        $response = response()->json($this->sendNotification($request->FCM_token, [
             "title" => $notification->title,
             "body" => $notification->body
-        ]);
+        ]));
 
         return $response;
     }
