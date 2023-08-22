@@ -177,7 +177,7 @@ class AdminController extends Controller
      */
     public function sendNotification($FCM_token, $message)
     {
-        $SERVER_API_KEY = 'AAAAr00IOb0:APA91bGmphRpTcZ3T2dVhE30dhde5r-Npsr0tvt_kbvrIBwpC7WeWuxbfe_OakmHGf2aPAs7nmOU9lUfG99iB1IF1xRRdg7chKxPbpRIrUifGLz2s4QoYonlHgIH24mLcm4Wv0JDHg9f';
+        $SERVER_API_KEY = 'AAAAJvXNNy8:APA91bHulJcITs9igsZzn7YytglzheDvvgFDMcyZUBcCXS1IzdQJBRqKKM7s4NsvWB8on-mrLDPNw6pZuOztPRKTNaCuB0qnYcZpwRrspeeif4Q7-nRRlGuZ9li7531rtqTsk11vJRvx';
 
         // payload data, it will vary according to requirement
         $data = [
