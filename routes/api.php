@@ -104,8 +104,8 @@ Route::prefix('sales')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminController::class, 'login']);
     Route::post('/updateFCMToken/{id}', [AdminController::class, 'updateFCMToken']);
-    Route::post('/sendAcceptNoti/{id}', [AdminController::class, 'sendAcceptNoti']);
-    Route::post('/sendRejectNoti/{id}', [AdminController::class, 'sendRejectNoti']);
+    Route::post('/sendAcceptNoti', [AdminController::class, 'sendAcceptNoti']);
+    Route::post('/sendRejectNoti', [AdminController::class, 'sendRejectNoti']);
     Route::get('/getPharmacist', [AdminController::class, 'getPharmacist']);
     Route::get('/pharmacistByID/{id}', [AdminController::class, 'pharmacistByID']);
 
