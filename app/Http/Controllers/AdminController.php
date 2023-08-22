@@ -53,7 +53,7 @@ class AdminController extends Controller
             ->select('id', 'first_name', 'middle_name', 'last_name',
                 'registration_number', 'registration_date', 'released_on_date',
                 'city', 'region', 'name_of_pharmacy', 'landline_phone_number', 'mobile_number',
-                'copy_of_the_syndicate_card_url', 'image_url', 'active')
+                'copy_of_the_syndicate_card_url', 'image_url', 'active','FCM_token')
             ->get();
 
         // Convert active value to boolean
@@ -63,7 +63,7 @@ class AdminController extends Controller
         });
 
         return response()->json([
-            'pharmacists'=>$pharmacists
+            'pharmacists' => $pharmacists
         ]);
     }
 
@@ -80,11 +80,11 @@ class AdminController extends Controller
             ], 404);
 
         }
-        $pharmacist=Pharmacist::query()->where('id', '=' ,$id)->select('id', 'first_name', 'middle_name', 'last_name',
+        $pharmacist = Pharmacist::query()->where('id', '=', $id)->select('id', 'first_name', 'middle_name', 'last_name',
             'registration_number', 'registration_date', 'released_on_date',
             'city', 'region', 'name_of_pharmacy', 'landline_phone_number', 'mobile_number',
-            'copy_of_the_syndicate_card_url', 'image_url', 'active')->get();
-        return response()->json(['message' => 'pharmacist by ID', $pharmacist],200);
+            'copy_of_the_syndicate_card_url', 'image_url', 'active','FCM_token')->get();
+        return response()->json(['message' => 'pharmacist by ID', $pharmacist], 200);
     }
 
 
@@ -117,60 +117,9 @@ class AdminController extends Controller
 
 //----------------------------------------------------------------------------------------------------
 
-    //send Accept notification
-
-
-     public function sendAcceptNoti($id)
-     {
-         // Get the pharmacist
-         $pharmacist = Pharmacist::query()->find($id);
-
-         if (!$pharmacist) {
-             return response()->json([
-                 'message' => 'Pharmacist not found'
-             ], 404);
-         }
-
-         // Update the 'active' field of the pharmacist
-         $pharmacist->update(['active' => 1]);
-
-         // Set the values for admin and pharmacist IDs
-         $adminId = 1;
-         $pharmacistId = $pharmacist->id;
-
-         // Store notification for the pharmacist
-         $notification = $pharmacist->notifications()->create([
-             'admin_id' => $adminId,
-             'pharmacist_id' => $pharmacistId,
-             'title' => 'Authentication Message',
-             'body' => 'Your order is accepted, your information is correct. Welcome to MediPharma!',
-         ]);
-
-         // Get FCM token and server key
-         $fcmToken = $pharmacist->FCM_token;
-         $serverKey = env('FCM_SERVER_KEY');
-
-         // Send FCM notification
-         $response = Http::acceptJson()->withToken($serverKey)->post('https://fcm.googleapis.com/fcm/send', [
-             'to' => $fcmToken,
-             'notification' => [
-                 'title' => $notification->title,
-                 'body' => $notification->body,
-                 'sound' => 'default'
-             ],
-         ]);
-
-         return json_decode($response);
-     }
-
-
-//----------------------------------------------------------------------------------------------------
-
-    //send reject notification
-    public function sendRejectNoti($id)
+    public function sendAcceptNoti(Request $request)
     {
-        // Get the pharmacist
-        $pharmacist = Pharmacist::query()->find($id);
+        $pharmacist = Pharmacist::where('FCM_token', $request->FCM_token)->first();
 
         if (!$pharmacist) {
             return response()->json([
@@ -178,25 +127,84 @@ class AdminController extends Controller
             ], 404);
         }
 
-        // Get FCM token and server key
-        $fcmToken = $pharmacist->FCM_token;
-        $serverKey = env('FCM_SERVER_KEY');
-
-        // Send FCM notification
-        $response = Http::acceptJson()->withToken($serverKey)->post('https://fcm.googleapis.com/fcm/send', [
-            'to' => $fcmToken,
-            'notification' => [
-                'title' => 'Authentication Message',
-                'body' => 'Your order is rejected, because your information isn\'t correct.
-                           Please verify your information.',
-                'sound' => 'default'
-            ]
+        // Update the 'active' field of the pharmacist
+        $pharmacist->update(['active' => true]);
+        $adminId = 1;
+        $pharmacistId = $pharmacist->id;
+        // Store notification in the notifications table
+        $notification = $pharmacist->notifications()->create([
+            'admin_id' => $adminId,
+            'pharmacist_id' => $pharmacistId,
+            'title' => 'Authentication Message',
+            'body' => 'Your order is accepted, your information is correct. Welcome to MediPharma!',
         ]);
 
-        // Delete the pharmacist
-        $pharmacist->delete();
+        // Send the notification
+        $response = $this->sendNotification($request->FCM_token, [
+            "title" => $notification->title,
+            "body" => $notification->body
+        ]);
 
-        return json_decode($response);
+        return $response;
+    }
+
+//----------------------------------------------------------------------------------------------------
+
+    public function sendRejectNoti(Request $request)
+    {
+        $pharmacist = Pharmacist::query()->where('FCM_token', $request->FCM_token)->first();
+
+        if (!$pharmacist) {
+            return response()->json([
+                'message' => 'Pharmacist not found'
+            ], 404);
+        }
+        $response = $this->sendNotification($request->FCM_token, [
+            "title" => 'Authentication Message',
+            "body" => 'Your order is refused!!, your information is not correct'
+        ]);
+        $pharmacist = Pharmacist::query()->where('FCM_token', $request->FCM_token)->first();
+        $pharmacist->delete();
+        return $response;
+    }
+
+//----------------------------------------------------------------------------------------------------
+
+    /**
+     * Write code on Method
+     *
+     * @return bool|string()
+     */
+    public function sendNotification($FCM_token, $message)
+    {
+        $SERVER_API_KEY = 'AAAAr00IOb0:APA91bGmphRpTcZ3T2dVhE30dhde5r-Npsr0tvt_kbvrIBwpC7WeWuxbfe_OakmHGf2aPAs7nmOU9lUfG99iB1IF1xRRdg7chKxPbpRIrUifGLz2s4QoYonlHgIH24mLcm4Wv0JDHg9f';
+
+        // payload data, it will vary according to requirement
+        $data = [
+            "to" => $FCM_token, // for single device id
+            "data" => $message
+        ];
+        $dataString = json_encode($data);
+
+        $headers = [
+            'Authorization: key=' . $SERVER_API_KEY,
+            'Content-Type: application/json',
+        ];
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $response;
     }
 
 //----------------------------------------------------------------------------------------------------

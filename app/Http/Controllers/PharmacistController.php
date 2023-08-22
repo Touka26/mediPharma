@@ -70,7 +70,8 @@ class PharmacistController extends Controller
             'password_confirmation' => ['required_with:password', 'same:password', 'string', 'min:8'],
             'image_url' => 'required|file',//'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'financial_fund' => 'required|numeric',
-//            'active'=>'required'
+//            'active' => 'required',
+            'FCM_token' => 'required',
 
         ]);
 
@@ -109,6 +110,7 @@ class PharmacistController extends Controller
             'image_url' => $url,
             'financial_fund' => $request->financial_fund,
             'active' => $request->active,
+            'FCM_token'=>$request->FCM_token,
 
         ]);
 
@@ -318,7 +320,8 @@ class PharmacistController extends Controller
                 'message' => 'Invalid ID'
             ], 422);
         }
-        $notification = Notification::query()->where('pharmacist_id', '=', $id)->select('pharmacist_id', 'title', 'body', 'image_url')->get();
+        $notification = Notification::query()->where('pharmacist_id', '=', $id)
+            ->select('pharmacist_id', 'title', 'body')->get();
         return response()->json(['message' => $notification]);
 
     }
