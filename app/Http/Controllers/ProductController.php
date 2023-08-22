@@ -20,7 +20,7 @@ class ProductController extends Controller
             'type' => 'required|string|max:50',
             'combination',
             'caliber',
-            'amount' => 'required|integer',
+            'amount' => 'required|numeric|min:1',
             'piece_price' => 'required',
             'image_url' => 'required|file',
             'production_date' => 'required',

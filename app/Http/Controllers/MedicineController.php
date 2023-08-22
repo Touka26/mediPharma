@@ -37,7 +37,7 @@ class MedicineController extends Controller
             'type' => 'required|max:50',
             'pharmaceutical_form' => 'required|max:50',
             'net_price' => 'required',
-            'amount' => 'required',
+            'amount' => 'required|numeric|min:1',
             'statement' => 'required',
             'image_url' => 'required|file',
             'production_date' => 'required',
