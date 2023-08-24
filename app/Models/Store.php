@@ -25,6 +25,9 @@ class Store extends Model
     public function product(){
         return $this->belongsTo(Product::class);
     }
+    public function salesBill(){
+        return $this->belongsTo(Sales_Bill::class);
+    }
 
     protected $casts = [
         'sales__bill_id' => 'integer',

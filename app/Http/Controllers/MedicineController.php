@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Forbidden;
 use App\Models\Manufacture;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class MedicineController extends Controller
     public function index()
     {
         $manufacture = DB::table('manufactures')
-            ->select('id','company_name')
+            ->select('id', 'company_name')
             ->orderBy('company_name')->get();
         return response()->json([
             'The manufacture' => $manufacture
@@ -28,7 +29,7 @@ class MedicineController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'manufacture_id' => 'required',
+            'manufacture_id' => 'required|exists:manufactures,id',
             'barcode' => 'required',
             'trade_name' => 'required|max:50',
             'combination' => 'required|max:50',
@@ -89,7 +90,7 @@ class MedicineController extends Controller
         }
         $medicine = DB::table('medicines')
             ->where('manufacture_id', '=', $id)
-            ->select('id','trade_name', 'amount', 'image_url','statement','common_price')
+            ->select('id', 'trade_name', 'amount', 'image_url', 'statement', 'common_price')
             ->get();
         return response()->json(['message' => 'The medicine for this manufacture',
             $medicine], 200);
@@ -138,6 +139,13 @@ class MedicineController extends Controller
 
 //-----------------------------------------------------------------------------------------------------
 
+    public function displayForbidden()
+    {
+        $forbidden = Forbidden::query()
+            ->select('forbiddens.medicine_id', 'forbiddens.prescription_url', 'forbiddens.id_number', 'medicines.trade_name as name')
+            ->leftJoin('medicines', 'forbiddens.medicine_id', '=', 'medicines.id')
+            ->get();
 
-
+        return response()->json(['all Forbidden' => $forbidden]);
+    }
 }

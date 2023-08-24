@@ -53,6 +53,7 @@ class PurchasesController extends Controller
             'The medicine or product for this purchases bill' => $details,
         ], 200);
     }
+
 //--------------------------------------------------------------------------------------------------------
 
     //Search by purchases date

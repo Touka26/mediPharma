@@ -163,64 +163,64 @@ class EmployeeController extends Controller
 //-------------------------------------------------------------------------------------------------
 
     // Update employee
-    public function update(Request $request, $id)
-    {
-
-        $employee = Employee::query()->find($id);
-        if ($employee == null) {
-            return response([
-                'message' => 'Invalid ID'
-            ], 422);
-        }
-
-        $first_name = $request->input('first_name');
-        $last_name = $request->input('last_name');
-        $birth_date = $request->input('birth_date');
-        $email = $request->input('email');
-        $phone_num = $request->input('phone_num');
-
-        if ($request->hasFile('CV_file')) {
-            $destination_path = 'public/files/CVs';
-            $CV_file = $request->file('CV_file');
-            $file_name = $CV_file->getClientOriginalName();
-            $path = $request->file('CV_file')->storeAs($destination_path, $file_name);
-            $cv = Storage::url($path);
-            $employee->CV_file = $cv;
-        }
-        if ($request->hasFile('image_url')) {
-            $destination_path = 'public/files/images';
-            $image_url = $request->file('image_url');
-            $file_name = $image_url->getClientOriginalName();
-            $path = $request->file('image_url')->storeAs($destination_path, $file_name);
-            $image = Storage::url($path);
-            $employee->image_url = $image;
-        }
-
-        if ($first_name) {
-            $employee->first_name = $first_name;
-        }
-
-        if ($last_name) {
-            $employee->last_name = $last_name;
-        }
-
-        if ($birth_date) {
-            $employee->phone_num = $phone_num;
-        }
-        if ($email) {
-            $employee->email = $email;
-        }
-        if ($phone_num) {
-            $employee->phone_num = $phone_num;
-        }
-
-        $employee->save();
-        return response()->json([
-            'message' => 'Updated Successfully', $employee
-        ]);
-
-
-    }
+//    public function update(Request $request, $id)
+//    {
+//
+//        $employee = Employee::query()->find($id);
+//        if ($employee == null) {
+//            return response([
+//                'message' => 'Invalid ID'
+//            ], 422);
+//        }
+//
+//        $first_name = $request->input('first_name');
+//        $last_name = $request->input('last_name');
+//        $birth_date = $request->input('birth_date');
+//        $email = $request->input('email');
+//        $phone_num = $request->input('phone_num');
+//
+//        if ($request->hasFile('CV_file')) {
+//            $destination_path = 'public/files/CVs';
+//            $CV_file = $request->file('CV_file');
+//            $file_name = $CV_file->getClientOriginalName();
+//            $path = $request->file('CV_file')->storeAs($destination_path, $file_name);
+//            $cv = Storage::url($path);
+//            $employee->CV_file = $cv;
+//        }
+//        if ($request->hasFile('image_url')) {
+//            $destination_path = 'public/files/images';
+//            $image_url = $request->file('image_url');
+//            $file_name = $image_url->getClientOriginalName();
+//            $path = $request->file('image_url')->storeAs($destination_path, $file_name);
+//            $image = Storage::url($path);
+//            $employee->image_url = $image;
+//        }
+//
+//        if ($first_name) {
+//            $employee->first_name = $first_name;
+//        }
+//
+//        if ($last_name) {
+//            $employee->last_name = $last_name;
+//        }
+//
+//        if ($birth_date) {
+//            $employee->phone_num = $phone_num;
+//        }
+//        if ($email) {
+//            $employee->email = $email;
+//        }
+//        if ($phone_num) {
+//            $employee->phone_num = $phone_num;
+//        }
+//
+//        $employee->save();
+//        return response()->json([
+//            'message' => 'Updated Successfully', $employee
+//        ]);
+//
+//
+//    }
 
 //-------------------------------------------------------------------------------------------------
 
